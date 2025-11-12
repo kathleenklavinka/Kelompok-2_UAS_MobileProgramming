@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'pages/deals_page.dart';
 
 void main() {
   runApp(const MyApp());
