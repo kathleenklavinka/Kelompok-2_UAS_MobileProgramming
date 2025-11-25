@@ -52,9 +52,24 @@ class HomePage extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _menuButton(Icons.card_giftcard, "Exchange", maroon),
-                _menuButton(Icons.history, "History", maroon),
-                _menuButton(Icons.store, "Merchant", maroon),
+                _menuButton(
+                  context, // Pass context
+                  Icons.card_giftcard,
+                  "Exchange",
+                  maroon,
+                  onTap: () {
+                    // Navigate to RewardsPage
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const RewardsPage(userPoints: 1250),
+                      ),
+                    );
+                  },
+                ),
+                _menuButton(context, Icons.history, "History", maroon),
+                _menuButton(context, Icons.store, "Merchant", maroon),
               ],
             ),
             const SizedBox(height: 30),
@@ -79,17 +94,26 @@ class HomePage extends StatelessWidget {
   }
 }
 
-Widget _menuButton(IconData icon, String label, Color color) {
-  return Column(
-    children: [
-      CircleAvatar(
-        radius: 25,
-        backgroundColor: color,
-        child: Icon(icon, color: Colors.white),
-      ),
-      const SizedBox(height: 6),
-      Text(label),
-    ],
+Widget _menuButton(
+  BuildContext context,
+  IconData icon,
+  String label,
+  Color color, {
+  VoidCallback? onTap,
+}) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Column(
+      children: [
+        CircleAvatar(
+          radius: 25,
+          backgroundColor: color,
+          child: Icon(icon, color: Colors.white),
+        ),
+        const SizedBox(height: 6),
+        Text(label),
+      ],
+    ),
   );
 }
 
