@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'pages/rewards_page.dart';
+import 'pages/profile_page.dart';
 
 void main() {
   runApp(const LoyaltyApp());
@@ -11,7 +12,7 @@ class LoyaltyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Notte Azzura Point',
-      home: const HomePage(),
+      home: const ProfilePage(), ///NANTI GANTI LAGI KE HOMEPAGE
       theme: ThemeData(
         primarySwatch: Colors.red,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red.shade800),

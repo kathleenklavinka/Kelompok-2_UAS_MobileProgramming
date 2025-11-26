@@ -11,7 +11,7 @@ class AppColors {
   static const Color greenDark = Color(0xFF5C6925);
   
   // Neutrals
-  static const Color cream = Color(0xFFE1D9CB);
+  static const Color cream = Color.fromARGB(255, 245, 236, 221);
   static const Color creamDark = Color(0xFFAEA392);
   static const Color white = Color(0xFFF7F5F0);
   static const Color grayLight = Color(0xFFD3CDC4);
