@@ -90,7 +90,6 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
     _controller.forward();
   }
 
-  // ---------- Badge helpers ----------
   IconData _iconForBadge(String key) {
     switch (key) {
       case 'first_purchase':
@@ -130,7 +129,7 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
     }
   }
 
-  // ---------- Greeting ----------
+  // Greeting 
   String greeting() {
     final h = DateTime.now().hour;
     if (h >= 5 && h < 12) return "Good Morning";
@@ -147,7 +146,7 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
     return "🌝";
   }
 
-  // ---------- Load profile ----------
+  // Load profile 
   Future<void> _loadData() async {
     final data = await ProfileService.loadProfile();
     setState(() {
@@ -158,7 +157,7 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
     });
   }
 
-  // ---------- Load streak ----------
+  // Load streak 
   Future<void> _loadStreak() async {
     final streak = await ProfileService.loadStreak();
     setState(() {
@@ -168,13 +167,13 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
     });
   }
 
-  // ---------- Load badges ----------
+  // Load badges 
   Future<void> _loadBadges() async {
     badges = await loadBadges();
     setState(() {});
   }
 
-  // ---------- Pick avatar ----------
+  // Pick avatar 
   Future<void> _pickAvatar() async {
     _avatarController.forward().then((_) => _avatarController.reverse());
     final result = await FilePicker.platform.pickFiles(type: FileType.image);
@@ -185,7 +184,7 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
     }
   }
 
-  // ---------- Helpers ----------
+  // Helpers 
   String formatPhone(String? phone) {
     if (phone == null || phone.isEmpty) return "-";
     final match = RegExp(r'^\+\d{1,2}').firstMatch(phone);
@@ -198,7 +197,7 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
   bool isSameDate(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
 
-  // ---------- Save & Load badges ----------
+  // Save & Load badges 
   static Future<void> saveBadges(List<String> badges) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList("badges", badges);
@@ -209,7 +208,7 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
     return prefs.getStringList("badges") ?? [];
   }
 
-  // ---------- Unlock badge & show notification ----------
+  // Unlock badge & show notification 
   void _unlockBadge(String badgeKey) async {
     if (badges.contains(badgeKey)) return;
     badges.add(badgeKey);
@@ -336,7 +335,7 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
     );
   }
 
-  // ---------- Reusable menu ----------
+  // Reusable menu 
   Widget _buildMenuItem(IconData icon, String title, {String? trailing, VoidCallback? onTap}) {
     return FadeTransition(
       opacity: _fade,
@@ -574,7 +573,6 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            // Profile header with enhanced design
             FadeTransition(
               opacity: _fade,
               child: SlideTransition(
@@ -686,7 +684,6 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
 
             const SizedBox(height: 24),
 
-            // Greeting with emoji
             FadeTransition(
               opacity: _fade,
               child: SlideTransition(
@@ -745,7 +742,6 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
 
             const SizedBox(height: 16),
 
-            // Enhanced Streak Card
             FadeTransition(
               opacity: _fade,
               child: SlideTransition(
@@ -868,7 +864,6 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
 
             const SizedBox(height: 32),
 
-            // Badges Section
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -905,7 +900,6 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
 
             const SizedBox(height: 32),
 
-            // Activities Section (New)
             if (_activities.isNotEmpty) ...[
               const SizedBox(height: 30),
               _buildSectionTitle("Activities"),
@@ -952,7 +946,6 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
                           ),
                           const SizedBox(width: 16),
 
-                          // Title & Reward
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -995,7 +988,6 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
 
             const SizedBox(height: 32),
 
-            // General Section
             _buildSectionTitle("General"),
             _buildMenuItem(
               Icons.home_outlined,
@@ -1019,7 +1011,6 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
 
             const SizedBox(height: 32),
 
-            // About Us Section
             _buildSectionTitle("About Us"),
             _buildMenuItem(
               Icons.local_pizza,
@@ -1042,7 +1033,6 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
 
             const SizedBox(height: 32),
 
-            // Privacy Section
             _buildSectionTitle("Privacy & Security"),
             _buildMenuItem(Icons.description_outlined, "Terms of Use"),
             _buildMenuItem(Icons.lock_outline, "Privacy Policy"),
