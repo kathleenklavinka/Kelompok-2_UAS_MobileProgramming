@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'pages/rewards_page.dart';
 import 'pages/profile_page.dart';
+import 'pages/add_points_page.dart';
 
 void main() {
   runApp(const LoyaltyApp());
