@@ -12,6 +12,8 @@ import 'package:azzura_rewards/pages/faq_page.dart';
 import 'package:azzura_rewards/pages/brand_story_page.dart';
 import 'package:azzura_rewards/pages/newsroom_page.dart';
 import 'package:azzura_rewards/pages/contact_us_page.dart';
+import 'package:azzura_rewards/pages/terms_of_use.dart';
+import 'package:azzura_rewards/pages/privacy_policy_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -130,7 +132,6 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
     }
   }
 
-  // Greeting 
   String greeting() {
     final h = DateTime.now().hour;
     if (h >= 5 && h < 12) return "Good Morning";
@@ -147,7 +148,6 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
     return "🌝";
   }
 
-  // Load profile 
   Future<void> _loadData() async {
     final data = await ProfileService.loadProfile();
     setState(() {
@@ -158,7 +158,6 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
     });
   }
 
-  // Load streak 
   Future<void> _loadStreak() async {
     final streak = await ProfileService.loadStreak();
     setState(() {
@@ -168,13 +167,11 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
     });
   }
 
-  // Load badges 
   Future<void> _loadBadges() async {
     badges = await loadBadges();
     setState(() {});
   }
 
-  // Pick avatar 
   Future<void> _pickAvatar() async {
     _avatarController.forward().then((_) => _avatarController.reverse());
     final result = await FilePicker.platform.pickFiles(type: FileType.image);
@@ -185,7 +182,6 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
     }
   }
 
-  // Helpers 
   String formatPhone(String? phone) {
     if (phone == null || phone.isEmpty) return "-";
     final match = RegExp(r'^\+\d{1,2}').firstMatch(phone);
@@ -198,7 +194,6 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
   bool isSameDate(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
 
-  // Save & Load badges 
   static Future<void> saveBadges(List<String> badges) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList("badges", badges);
@@ -209,7 +204,6 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
     return prefs.getStringList("badges") ?? [];
   }
 
-  // Unlock badge & show notification 
   void _unlockBadge(String badgeKey) async {
     if (badges.contains(badgeKey)) return;
     badges.add(badgeKey);
@@ -336,7 +330,6 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
     );
   }
 
-  // Reusable menu 
   Widget _buildMenuItem(IconData icon, String title, {String? trailing, VoidCallback? onTap}) {
     return FadeTransition(
       opacity: _fade,
@@ -1007,7 +1000,7 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
               ),
             ),
             _buildMenuItem(Icons.chat_bubble_outline, "Live Chat"),
-             _buildMenuItem(
+            _buildMenuItem(
               Icons.help_outline,
               "Contact Us",
               onTap: () => Navigator.push(
@@ -1042,8 +1035,22 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
             const SizedBox(height: 32),
 
             _buildSectionTitle("Privacy & Security"),
-            _buildMenuItem(Icons.description_outlined, "Terms of Use"),
-            _buildMenuItem(Icons.lock_outline, "Privacy Policy"),
+            _buildMenuItem(
+              Icons.help_outline,
+              "Terms Of Use",
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const TermsOfUsePage()),
+              ),
+            ),
+            _buildMenuItem(
+              Icons.help_outline,
+              "Privacy Policy",
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const PrivacyPolicyPage()),
+              ),
+            ),
           ],
         ),
       ),

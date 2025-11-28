@@ -57,12 +57,11 @@ class HomePage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _menuButton(
-                  context, // Pass context
+                  context,
                   Icons.card_giftcard,
                   "Exchange",
                   maroon,
                   onTap: () {
-                    // Navigate to RewardsPage
                     Navigator.push(
                       context,
                       MaterialPageRoute(
