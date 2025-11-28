@@ -11,6 +11,7 @@ import 'package:azzura_rewards/pages/saved_address_page.dart';
 import 'package:azzura_rewards/pages/faq_page.dart';
 import 'package:azzura_rewards/pages/brand_story_page.dart';
 import 'package:azzura_rewards/pages/newsroom_page.dart';
+import 'package:azzura_rewards/pages/contact_us_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -1006,7 +1007,14 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
               ),
             ),
             _buildMenuItem(Icons.chat_bubble_outline, "Live Chat"),
-            _buildMenuItem(Icons.phone_in_talk_outlined, "Contact Us"),
+             _buildMenuItem(
+              Icons.help_outline,
+              "Contact Us",
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ContactUsPage()),
+              ),
+            ),
             _buildMenuItem(Icons.star_border, "Rate Our App", trailing: "v4.0.41"),
 
             const SizedBox(height: 32),

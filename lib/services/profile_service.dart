@@ -1,7 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileService {
-  // Save Profile
   static Future<void> saveProfile({
     required String name,
     required String email,
@@ -26,7 +25,6 @@ class ProfileService {
     if (password != null) await prefs.setString("password", password);
   }
 
-  // Load Profile
   static Future<Map<String, String>> loadProfile() async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -41,13 +39,11 @@ class ProfileService {
     };
   }
 
-  // Save Avatar
   static Future<void> saveAvatar(String base64Str) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString("avatar", base64Str);
   }
 
-  // For Daily Check-ins
   static const String _kStreakDaysKey = 'streak_days';
   static const String _kStreakLastKey = 'streak_last';
 
@@ -57,7 +53,6 @@ class ProfileService {
     await prefs.setString(_kStreakLastKey, lastCheckInIso);
   }
 
-  // For Load Daily Check-ins
   static Future<Map<String, dynamic>> loadStreak() async {
     final prefs = await SharedPreferences.getInstance();
     final days = prefs.getInt(_kStreakDaysKey) ?? 0;
@@ -68,20 +63,17 @@ class ProfileService {
     };
   }
 
-  // Reset Streaks (opsional)
   static Future<void> resetStreak() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_kStreakDaysKey);
     await prefs.remove(_kStreakLastKey);
   }
 
-  // Save Badges
   static Future<void> saveBadges(List<String> badges) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList("badges", badges);
   }
 
-  // Load BAdges
   static Future<List<String>> loadBadges() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getStringList("badges") ?? [];
