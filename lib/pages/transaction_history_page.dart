@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'dart:math';
+import 'inbox_page.dart';
 
 enum HistoryPageState { loading, loaded, empty, error }
 
@@ -103,6 +104,12 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage>
     final transactionsJson = transactions.map((t) => jsonEncode(t)).toList();
     await prefs.setStringList('transactions', transactionsJson);
 
+  await InboxPage.createNotification(
+    type: 'points',
+    title: '⭐ Points Earned!',
+    message: 'You earned ${selectedDish['points']} points from ${selectedDish['name']}!',
+    emoji: selectedDish['emoji'].toString(),
+  );
     _loadTransactions();
   }
 
