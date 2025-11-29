@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math';
 import 'dart:convert';
 import 'transaction_history_page.dart';
+import 'inbox_page.dart';
 
 // MULTISTATE ENUM
 enum RewardPageState { loading, loaded, error, redeeming }
@@ -888,6 +889,13 @@ class _RewardsPageState extends State<RewardsPage>
     await _saveUserData();
     await _saveRedeemedRewards();
     await _saveTransaction(reward);
+
+    await InboxPage.createNotification(
+    type: 'reward',
+    title: '🎁 Reward Redeemed!',
+    message: 'You successfully redeemed ${reward['name']} for ${reward['points']} points!',
+    emoji: reward['image'] ?? '🎁',
+  );
 
     _showQRCodeDialog(reward);
   }
