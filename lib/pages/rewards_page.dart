@@ -1,27 +1,29 @@
-// ignore_for_file: use_super_parameters
-
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math';
+import 'dart:convert';
+import 'transaction_history_page.dart';
 
 // MULTISTATE ENUM
 enum RewardPageState { loading, loaded, error, redeeming }
 
 class RewardsPage extends StatefulWidget {
-  const RewardsPage({Key? key, required int userPoints}) : super(key: key);
+  const RewardsPage({super.key});
 
   @override
   State<RewardsPage> createState() => _RewardsPageState();
 }
 
-class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStateMixin {
+class _RewardsPageState extends State<RewardsPage>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   RewardPageState _currentState = RewardPageState.loading;
-  
-  // User data
+
+  // User data - akan dimuat dari SharedPreferences
   int userNottiPoints = 2450;
   String userTier = "Ruby";
   int userLevel = 15;
-  
+
   // Rewards data
   final List<Map<String, dynamic>> rewards = [
     {
@@ -116,14 +118,75 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
     _loadRewards();
   }
 
+  // LOAD DATA DARI SHAREDPREFERENCES
   Future<void> _loadRewards() async {
     setState(() => _currentState = RewardPageState.loading);
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      // Load user points & level
+      userNottiPoints = prefs.getInt('userNottiPoints') ?? 2450;
+      userLevel = prefs.getInt('userLevel') ?? 15;
+      userTier = prefs.getString('userTier') ?? 'Ruby';
+
+      // Load redeemed rewards
+      final redeemedIds = prefs.getStringList('redeemedRewards') ?? [];
+      for (var reward in rewards) {
+        reward['redeemed'] = redeemedIds.contains(reward['id']);
+      }
+
+      await Future.delayed(Duration(seconds: 1));
+
+      setState(() => _currentState = RewardPageState.loaded);
+      _animationController.forward();
+    } catch (e) {
+      setState(() => _currentState = RewardPageState.error);
+    }
+  }
+
+  // SAVE USER DATA KE SHAREDPREFERENCES
+  Future<void> _saveUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('userNottiPoints', userNottiPoints);
+    await prefs.setInt('userLevel', userLevel);
+    await prefs.setString('userTier', userTier);
+  }
+
+  // SAVE REDEEMED REWARDS KE SHAREDPREFERENCES
+  Future<void> _saveRedeemedRewards() async {
+    final prefs = await SharedPreferences.getInstance();
+    final redeemedIds = rewards
+        .where((r) => r['redeemed'] == true)
+        .map((r) => r['id'] as String)
+        .toList();
+    await prefs.setStringList('redeemedRewards', redeemedIds);
+  }
+
+  // RESET DATA (untuk testing)
+  Future<void> _resetData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    _loadRewards();
+  }
+
+  Future<void> _saveTransaction(Map<String, dynamic> reward) async {
+    final prefs = await SharedPreferences.getInstance();
     
-    // Simulate loading
-    await Future.delayed(Duration(seconds: 2));
-    
-    setState(() => _currentState = RewardPageState.loaded);
-    _animationController.forward();
+    final transaction = {
+      'id': 'trans_${DateTime.now().millisecondsSinceEpoch}',
+      'type': 'redeemed',
+      'points': reward['points'],
+      'title': 'Reward Redeemed',
+      'description': reward['name'],
+      'date': DateTime.now().toIso8601String(),
+      'qrCode': 'AZZURA-${reward['id']}-${DateTime.now().millisecondsSinceEpoch}',
+      'emoji': reward['image'],
+    };
+
+    final transactionsJson = prefs.getStringList('transactions') ?? [];
+    transactionsJson.insert(0, jsonEncode(transaction));
+    await prefs.setStringList('transactions', transactionsJson);
   }
 
   @override
@@ -138,13 +201,12 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
   Color get _green => Color(0xFF7D8D36);
   Color get _cream => Color(0xFFE1D9CB);
   Color get _gold => Color(0xFFC4A46A);
+  Color get _darkBrown => Color(0xFF4A3428);
+  Color get _warmBrown => Color(0xFF6B4E3D);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: _cream,
-      body: _buildBody(),
-    );
+    return Scaffold(backgroundColor: _cream, body: _buildBody());
   }
 
   Widget _buildBody() {
@@ -159,7 +221,6 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
     }
   }
 
-  // MULTISTATE: LOADING
   Widget _buildLoadingState() {
     return Container(
       decoration: BoxDecoration(
@@ -236,7 +297,10 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: Text('Retry', style: TextStyle(fontWeight: FontWeight.bold)),
+                child: Text(
+                  'Retry',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
             ],
           ),
@@ -249,7 +313,6 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
   Widget _buildLoadedState() {
     return CustomScrollView(
       slivers: [
-        // Header with gradient
         SliverAppBar(
           expandedHeight: 200,
           pinned: true,
@@ -259,6 +322,17 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
             onPressed: () => Navigator.pop(context),
           ),
           actions: [
+            IconButton(
+              icon: Icon(Icons.history, color: _cream),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TransactionHistoryPage(),
+                  ),
+                );
+              },
+            ),
             IconButton(
               icon: Icon(Icons.help_outline, color: _cream),
               onPressed: () => _showInfoDialog(),
@@ -305,10 +379,7 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
 
         // Points & Level Card
         SliverToBoxAdapter(
-          child: Padding(
-            padding: EdgeInsets.all(20),
-            child: _buildLevelCard(),
-          ),
+          child: Padding(padding: EdgeInsets.all(20), child: _buildLevelCard()),
         ),
 
         // Privileges Section
@@ -352,7 +423,7 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF1a3a52), Color(0xFF2d5a7b)],
+          colors: [_darkBrown, _warmBrown],
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
@@ -366,12 +437,8 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
       child: Stack(
         children: [
           // Background pattern
-          Positioned.fill(
-            child: CustomPaint(
-              painter: DiamondPatternPainter(),
-            ),
-          ),
-          
+          Positioned.fill(child: CustomPaint(painter: DiamondPatternPainter())),
+
           Padding(
             padding: EdgeInsets.all(24),
             child: Column(
@@ -386,14 +453,14 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
                       children: [
                         Text(
                           'Wealth Level',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                          ),
+                          style: TextStyle(color: Colors.white70, fontSize: 14),
                         ),
                         SizedBox(height: 8),
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(20),
@@ -417,10 +484,7 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: RadialGradient(
-                          colors: [
-                            _gold,
-                            _gold.withOpacity(0.7),
-                          ],
+                          colors: [_gold, _gold.withOpacity(0.7)],
                         ),
                         boxShadow: [
                           BoxShadow(
@@ -431,17 +495,14 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
                         ],
                       ),
                       child: Center(
-                        child: Text(
-                          '💎',
-                          style: TextStyle(fontSize: 40),
-                        ),
+                        child: Text('💎', style: TextStyle(fontSize: 40)),
                       ),
                     ),
                   ],
                 ),
-                
+
                 SizedBox(height: 24),
-                
+
                 // Points Display
                 Container(
                   padding: EdgeInsets.all(20),
@@ -516,11 +577,11 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isRedeemed 
+            color: isRedeemed
                 ? _green.withOpacity(0.5)
-                : isLocked 
-                    ? Colors.grey.withOpacity(0.3)
-                    : _primaryRed.withOpacity(0.5),
+                : isLocked
+                ? Colors.grey.withOpacity(0.3)
+                : _primaryRed.withOpacity(0.5),
             width: 2,
           ),
           boxShadow: [
@@ -537,11 +598,11 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
           color: Colors.transparent,
           child: InkWell(
             borderRadius: BorderRadius.circular(20),
-            onTap: isLocked 
+            onTap: isLocked
                 ? () => _showInsufficientPointsDialog(reward)
-                : isRedeemed 
-                    ? null 
-                    : () => _showRedeemDialog(reward),
+                : isRedeemed
+                ? null
+                : () => _showRedeemDialog(reward),
             child: Opacity(
               opacity: isLocked ? 0.5 : 1.0,
               child: Stack(
@@ -555,16 +616,24 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
                         if (isLocked)
                           Align(
                             alignment: Alignment.topRight,
-                            child: Icon(Icons.lock, color: Colors.grey, size: 20),
+                            child: Icon(
+                              Icons.lock,
+                              color: Colors.grey,
+                              size: 20,
+                            ),
                           )
                         else if (isRedeemed)
                           Align(
                             alignment: Alignment.topRight,
-                            child: Icon(Icons.check_circle, color: _green, size: 20),
+                            child: Icon(
+                              Icons.check_circle,
+                              color: _green,
+                              size: 20,
+                            ),
                           ),
-                        
+
                         SizedBox(height: 8),
-                        
+
                         // Emoji
                         Center(
                           child: Text(
@@ -572,12 +641,15 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
                             style: TextStyle(fontSize: 48),
                           ),
                         ),
-                        
+
                         SizedBox(height: 12),
-                        
+
                         // Category tag
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: _primaryRed.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
@@ -591,9 +663,9 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
                             ),
                           ),
                         ),
-                        
+
                         SizedBox(height: 8),
-                        
+
                         // Name
                         Text(
                           reward['name'],
@@ -605,9 +677,9 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        
+
                         SizedBox(height: 4),
-                        
+
                         // Description
                         Text(
                           reward['description'],
@@ -618,17 +690,13 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        
+
                         Spacer(),
-                        
+
                         // Points
                         Row(
                           children: [
-                            Icon(
-                              Icons.stars,
-                              size: 16,
-                              color: _gold,
-                            ),
+                            Icon(Icons.stars, size: 16, color: _gold),
                             SizedBox(width: 4),
                             Text(
                               '${reward['points']}',
@@ -643,7 +711,7 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
                       ],
                     ),
                   ),
-                  
+
                   // Redeem button
                   if (canRedeem)
                     Positioned(
@@ -699,9 +767,7 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
               Container(
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [_primaryRed, _lightRed],
-                  ),
+                  gradient: LinearGradient(colors: [_primaryRed, _lightRed]),
                   shape: BoxShape.circle,
                 ),
                 child: Text(reward['image'], style: TextStyle(fontSize: 48)),
@@ -808,22 +874,28 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
 
   void _processRedeem(Map<String, dynamic> reward) async {
     setState(() => _currentState = RewardPageState.redeeming);
-    
+
     // Simulate processing
     await Future.delayed(Duration(seconds: 1));
-    
+
     setState(() {
       reward['redeemed'] = true;
       userNottiPoints -= reward['points'] as int;
       _currentState = RewardPageState.loaded;
     });
-    
+
+    // SAVE KE SHAREDPREFERENCES
+    await _saveUserData();
+    await _saveRedeemedRewards();
+    await _saveTransaction(reward);
+
     _showQRCodeDialog(reward);
   }
 
   void _showQRCodeDialog(Map<String, dynamic> reward) {
-    String qrCode = 'AZZURA-${reward['id']}-${DateTime.now().millisecondsSinceEpoch}';
-    
+    String qrCode =
+        'AZZURA-${reward['id']}-${DateTime.now().millisecondsSinceEpoch}';
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -842,11 +914,7 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.check_circle,
-                size: 64,
-                color: _green,
-              ),
+              Icon(Icons.check_circle, size: 64, color: _green),
               SizedBox(height: 16),
               Text(
                 'Redeemed Successfully!',
@@ -866,7 +934,7 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
                 ),
               ),
               SizedBox(height: 24),
-              
+
               // QR Code placeholder
               Container(
                 width: 200,
@@ -876,11 +944,9 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: _primaryRed, width: 3),
                 ),
-                child: CustomPaint(
-                  painter: QRCodePainter(qrCode),
-                ),
+                child: CustomPaint(painter: QRCodePainter(qrCode)),
               ),
-              
+
               SizedBox(height: 16),
               Container(
                 padding: EdgeInsets.all(12),
@@ -900,10 +966,7 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
               SizedBox(height: 16),
               Text(
                 'Show this QR code to cashier',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 24),
@@ -933,7 +996,7 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
 
   void _showInsufficientPointsDialog(Map<String, dynamic> reward) {
     int needed = reward['points'] - userNottiPoints;
-    
+
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -1045,10 +1108,7 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
         Container(
           width: 28,
           height: 28,
-          decoration: BoxDecoration(
-            color: _primaryRed,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: _primaryRed, shape: BoxShape.circle),
           child: Center(
             child: Text(
               number,
@@ -1075,7 +1135,6 @@ class _RewardsPageState extends State<RewardsPage> with SingleTickerProviderStat
   }
 }
 
-// Custom Painter for Diamond Pattern Background
 class DiamondPatternPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -1085,7 +1144,7 @@ class DiamondPatternPainter extends CustomPainter {
       ..strokeWidth = 1;
 
     final spacing = 40.0;
-    
+
     for (double i = -spacing; i < size.width + spacing; i += spacing) {
       for (double j = -spacing; j < size.height + spacing; j += spacing) {
         final path = Path();
@@ -1103,10 +1162,9 @@ class DiamondPatternPainter extends CustomPainter {
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
 
-// Custom Painter for QR Code
 class QRCodePainter extends CustomPainter {
   final String data;
-  
+
   QRCodePainter(this.data);
 
   @override
@@ -1135,7 +1193,6 @@ class QRCodePainter extends CustomPainter {
       }
     }
 
-    // Corner markers
     final markerPaint = Paint()
       ..color = Colors.black
       ..style = PaintingStyle.stroke
@@ -1146,11 +1203,21 @@ class QRCodePainter extends CustomPainter {
       markerPaint,
     );
     canvas.drawRect(
-      Rect.fromLTWH(size.width - blockSize * 3, 0, blockSize * 3, blockSize * 3),
+      Rect.fromLTWH(
+        size.width - blockSize * 3,
+        0,
+        blockSize * 3,
+        blockSize * 3,
+      ),
       markerPaint,
     );
     canvas.drawRect(
-      Rect.fromLTWH(0, size.height - blockSize * 3, blockSize * 3, blockSize * 3),
+      Rect.fromLTWH(
+        0,
+        size.height - blockSize * 3,
+        blockSize * 3,
+        blockSize * 3,
+      ),
       markerPaint,
     );
   }
