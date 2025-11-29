@@ -8,14 +8,13 @@ class PromoDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Ambil warna utama dari list colors promo
     final Color mainColor = (promo['colors'] as List<Color>)[0];
 
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
         title: Text(promo['merchant']),
-        backgroundColor: mainColor, 
+        backgroundColor: mainColor,
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -80,9 +79,10 @@ class PromoDetailPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // 1. Description
                   const Text(
                     "Description",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.black),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -94,32 +94,92 @@ class PromoDetailPage extends StatelessWidget {
                   const Divider(),
                   const SizedBox(height: 24),
 
-                  const Text(
-                    "Terms & Conditions",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 12),
-                  
-                  // List Syarat
-                  if (promo['terms'] != null)
-                    ...(promo['terms'] as List).map((term) {
+                  // 2. How to Use 
+                  if (promo['steps'] != null) ...[
+                    const Text(
+                      "How to Use",
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.black),
+                    ),
+                    const SizedBox(height: 16),
+                    ...(promo['steps'] as List).asMap().entries.map((entry) {
+                      int idx = entry.key + 1;
+                      String step = entry.value;
                       return Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
+                        padding: const EdgeInsets.only(bottom: 16),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(Icons.check_circle, size: 16, color: mainColor),
-                            const SizedBox(width: 10),
+                            // Nomor Lingkaran
+                            Container(
+                              width: 24,
+                              height: 24,
+                              decoration: BoxDecoration(
+                                color: mainColor.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  "$idx",
+                                  style: TextStyle(
+                                    color: mainColor, 
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            // Teks Langkah
                             Expanded(
                               child: Text(
-                                term,
-                                style: const TextStyle(color: AppColors.grayDark, fontSize: 14),
+                                step,
+                                style: const TextStyle(color: AppColors.grayDark, fontSize: 14, height: 1.4),
                               ),
                             ),
                           ],
                         ),
                       );
                     }).toList(),
+                    const SizedBox(height: 24),
+                    const Divider(),
+                    const SizedBox(height: 24),
+                  ],
+
+                  // 3. Terms & Conditions
+                  const Text(
+                    "Terms & Conditions",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.black),
+                  ),
+                  const SizedBox(height: 12),
+                  
+                  if (promo['terms'] != null)
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.grayLight.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        children: (promo['terms'] as List).map((term) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Icon(Icons.info_outline, size: 16, color: AppColors.gray),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    term,
+                                    style: const TextStyle(color: AppColors.grayDark, fontSize: 13),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
                 ],
               ),
             ),
