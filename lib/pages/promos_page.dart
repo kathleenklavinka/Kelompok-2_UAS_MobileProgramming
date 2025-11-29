@@ -12,65 +12,65 @@ class PromosPage extends StatefulWidget {
 class _PromosPageState extends State<PromosPage> {
   final List<Map<String, dynamic>> promos = [
     {
-      "title": "Cashback 50% Pakai GoPay",
+      "title": "50% Cashback with GoPay",
       "merchant": "GoPay",
       "period": "Valid until 30 Nov",
-      "description": "Dapatkan cashback 50% maksimal Rp 20.000 untuk pembayaran menggunakan GoPay/GoPay Later. Berlaku 1x/pengguna/minggu.",
+      "description": "Get 50% cashback up to Rp 20,000 for payments using GoPay or GoPay Later. Valid 1x/user/week.",
       "colors": [const Color(0xFF00AA13), const Color(0xFF00C318)],
-      "image": "assets/free.png",
-      "terms": ["Min. transaksi Rp 40.000", "Berlaku Dine-in", "Maks. Cashback Rp 20.000"],
+      "image": "assets/gopay.png",
+      "terms": ["Min. transaction Rp 40,000", "Valid for Dine-in only"],
       "steps": [
-        "Buka aplikasi Gojek dan pilih menu 'Bayar'.",
-        "Scan QRIS yang tersedia di kasir Notte Azzura.",
-        "Pastikan nominal pembayaran sudah sesuai.",
-        "Klik 'Pakai Promo' dan pilih voucher cashback.",
-        "Selesaikan pembayaran."
+        "Open Gojek app and select 'Pay'.",
+        "Scan the QRIS available at the cashier.",
+        "Ensure the payment amount is correct.",
+        "Click 'Apply Promo' and select the cashback voucher.",
+        "Complete the payment."
       ]
     },
     {
-      "title": "Diskon Rp 15rb Pakai OVO",
+      "title": "Rp 15k Off with OVO",
       "merchant": "OVO",
       "period": "1-15 Dec 2024",
-      "description": "Potongan langsung Rp 15.000 dengan minimal transaksi Rp 100.000 menggunakan OVO Cash/Points.",
+      "description": "Direct discount of Rp 15,000 with a minimum transaction of Rp 100,000 using OVO Cash/Points.",
       "colors": [const Color(0xFF4C3494), const Color(0xFF6946C6)],
-      "image": "assets/cp.png",
-      "terms": ["Min. transaksi Rp 100.000", "Tidak berlaku kelipatan"],
+      "image": "assets/ovo.png",
+      "terms": ["Min. transaction Rp 100,000", "Multiple transactions not allowed"],
       "steps": [
-        "Info ke kasir bahwa Anda ingin membayar pakai OVO.",
-        "Buka aplikasi OVO dan scan QR Code.",
-        "Masukkan nominal transaksi (min. Rp 100.000).",
-        "Diskon akan otomatis memotong total bayar.",
-        "Konfirmasi pembayaran."
+        "Inform the cashier you want to pay with OVO.",
+        "Open OVO app and scan the QR Code.",
+        "Enter transaction amount (min. Rp 100,000).",
+        "Discount will be automatically applied.",
+        "Confirm payment."
       ]
     },
     {
       "title": "Pay 1 Get 2 with Mandiri",
       "merchant": "Bank Mandiri",
       "period": "Weekend Only",
-      "description": "Beli 1 menu Main Course apa saja, gratis 1 menu Pasta pilihan dengan Kartu Kredit Mandiri.",
+      "description": "Buy any 1 Main Course menu, get 1 selected Pasta menu for free with Mandiri Credit Card.",
       "colors": [const Color(0xFF003D79), const Color(0xFF005CAA)],
-      "image": "assets/buy1get1.png",
-      "terms": ["Khusus Sabtu & Minggu", "Kartu Signature & World"],
+      "image": "assets/mandiri.png",
+      "terms": ["Saturday & Sunday only", "Signature & World Cards"],
       "steps": [
-        "Pesan 1 Main Course dan 1 Pasta pilihan.",
-        "Gunakan Kartu Kredit Mandiri saat pembayaran.",
-        "Kasir akan memotong harga menu Pasta termurah.",
-        "Simpan struk sebagai bukti transaksi."
+        "Order 1 Main Course and 1 Pasta of your choice.",
+        "Use Mandiri Credit Card for payment.",
+        "The cashier will deduct the price of the lower-priced item.",
+        "Keep the receipt as proof of transaction."
       ]
     },
     {
-      "title": "Diskon 20% Kartu BCA",
+      "title": "20% Discount with BCA",
       "merchant": "BCA",
       "period": "Every Monday",
-      "description": "Senin makin hemat dengan diskon 20% khusus pemegang Kartu Kredit BCA.",
+      "description": "Make your Mondays more affordable with a 20% discount specifically for BCA Credit Card holders.",
       "colors": [const Color(0xFF005CAA), const Color(0xFF007AE6)],
-      "image": "assets/PASTA.png",
-      "terms": ["Min. transaksi Rp 200.000", "Maks. diskon Rp 100.000"],
+      "image": "assets/bca.png",
+      "terms": ["Min. transaction Rp 200,000", "Max. discount Rp 100,000"],
       "steps": [
-        "Pastikan total transaksi minimal Rp 200.000.",
-        "Serahkan Kartu Kredit BCA ke kasir.",
-        "Diskon 20% akan diinput langsung di mesin EDC.",
-        "Tanda tangan struk dan selesai."
+        "Ensure total transaction is at least Rp 200,000.",
+        "Present your BCA Credit Card to the cashier.",
+        "20% discount will be applied on the EDC machine.",
+        "Sign the receipt and you are done."
       ]
     },
   ];
@@ -78,9 +78,12 @@ class _PromosPageState extends State<PromosPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: const Color(0xFFF5F5F5), 
       appBar: AppBar(
-        title: const Text("Partner Promo", style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          "Partner Promo", 
+          style: TextStyle(fontWeight: FontWeight.bold)
+        ),
         backgroundColor: AppColors.redDark,
         foregroundColor: Colors.white,
         centerTitle: true,
@@ -133,13 +136,20 @@ class _PromosPageState extends State<PromosPage> {
             Positioned(
               right: -30,
               top: -30,
-              child: CircleAvatar(radius: 90, backgroundColor: Colors.white.withOpacity(0.1)),
+              child: CircleAvatar(
+                radius: 90,
+                backgroundColor: Colors.white.withOpacity(0.1),
+              ),
             ),
             Positioned(
               left: -20,
               bottom: -40,
-              child: CircleAvatar(radius: 60, backgroundColor: Colors.white.withOpacity(0.08)),
+              child: CircleAvatar(
+                radius: 60,
+                backgroundColor: Colors.white.withOpacity(0.08),
+              ),
             ),
+
             Padding(
               padding: const EdgeInsets.all(20),
               child: Row(
@@ -151,69 +161,115 @@ class _PromosPageState extends State<PromosPage> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.2),
+                            color: Colors.black.withOpacity(0.2), 
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
                             promo['merchant'].toString().toUpperCase(),
-                            style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1,
+                            ),
                           ),
                         ),
                         const Spacer(),
+                        
+                        // Judul
                         Text(
                           promo['title'],
-                          style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800, height: 1.2),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            height: 1.2,
+                          ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
+                        
                         const Spacer(),
+
                         Row(
                           children: [
                             const Icon(Icons.access_time_filled, color: Colors.white70, size: 14),
                             const SizedBox(width: 6),
                             Text(
                               promo['period'],
-                              style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ],
                         ),
                       ],
                     ),
                   ),
+
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 16),
                     width: 1,
                     height: double.infinity,
-                    child: CustomPaint(painter: DashedLinePainter()),
+                    child: CustomPaint(
+                      painter: DashedLinePainter(),
+                    ),
                   ),
+
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(color: Colors.white.withOpacity(0.3), shape: BoxShape.circle),
+                        padding: const EdgeInsets.all(4), 
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.3),
+                          shape: BoxShape.circle,
+                        ),
                         child: Container(
                           width: 70,
                           height: 70,
-                          decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
                           child: ClipOval(
                             child: Image.asset(
                               promo['image'],
                               fit: BoxFit.cover,
-                              errorBuilder: (ctx, err, stack) => Icon(Icons.image_not_supported, color: promo['colors'][0]),
+                              errorBuilder: (ctx, err, stack) => Icon(
+                                Icons.image_not_supported,
+                                color: promo['colors'][0],
+                              ),
                             ),
                           ),
                         ),
                       ),
                       const SizedBox(height: 12),
+                      
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
                         child: Row(
                           children: [
-                            Text("View", style: TextStyle(color: promo['colors'][0], fontSize: 11, fontWeight: FontWeight.bold)),
+                            Text(
+                              "View",
+                              style: TextStyle(
+                                color: promo['colors'][0], 
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                             const SizedBox(width: 4),
-                            Icon(Icons.arrow_forward_rounded, size: 12, color: promo['colors'][0]),
+                            Icon(
+                              Icons.arrow_forward_rounded,
+                              size: 12,
+                              color: promo['colors'][0],
+                            ),
                           ],
                         ),
                       )
@@ -233,12 +289,16 @@ class DashedLinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     double dashHeight = 5, dashSpace = 3, startY = 0;
-    final paint = Paint()..color = Colors.white.withOpacity(0.5)..strokeWidth = 1;
+    final paint = Paint()
+      ..color = Colors.white.withOpacity(0.5)
+      ..strokeWidth = 1;
+
     while (startY < size.height) {
       canvas.drawLine(Offset(0, startY), Offset(0, startY + dashHeight), paint);
       startY += dashHeight + dashSpace;
     }
   }
+
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
