@@ -61,7 +61,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     _summaryItem(
-                      'Total Transaksi',
+                      'Total Transaction',
                       '$totalTransactions',
                       Icons.receipt_long,
                     ),
@@ -71,7 +71,7 @@ class _HistoryPageState extends State<HistoryPage> {
                       color: AppColors.white.withOpacity(0.3),
                     ),
                     _summaryItem(
-                      'Points Terpakai',
+                      'Points Used',
                       '$totalPointsSpent',
                       Icons.star,
                     ),
@@ -295,12 +295,12 @@ class _HistoryPageState extends State<HistoryPage> {
       case 'completed':
         bgColor = AppColors.success.withOpacity(0.15);
         textColor = AppColors.success;
-        label = 'Selesai';
+        label = 'Completed';
         break;
       case 'shipping':
         bgColor = AppColors.warning.withOpacity(0.15);
         textColor = AppColors.warning;
-        label = 'Dikirim';
+        label = 'On delivery';
         break;
       case 'pending':
         bgColor = AppColors.info.withOpacity(0.15);
@@ -338,7 +338,7 @@ class _HistoryPageState extends State<HistoryPage> {
           Icon(Icons.inbox_outlined, size: 80, color: AppColors.grayLight),
           const SizedBox(height: 16),
           const Text(
-            'Belum ada transaksi',
+            'No transactions yet',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -347,7 +347,7 @@ class _HistoryPageState extends State<HistoryPage> {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Mulai tukar poin dengan reward atau merchandise',
+            'Start redeeming your points for rewards or merchandise',
             style: TextStyle(fontSize: 14, color: AppColors.gray),
             textAlign: TextAlign.center,
           ),
@@ -375,14 +375,14 @@ class _HistoryPageState extends State<HistoryPage> {
       'Feb',
       'Mar',
       'Apr',
-      'Mei',
+      'May',
       'Jun',
       'Jul',
-      'Ags',
+      'Aug',
       'Sep',
-      'Okt',
+      'Oct',
       'Nov',
-      'Des',
+      'Dec',
     ];
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
@@ -438,7 +438,7 @@ class _HistoryPageState extends State<HistoryPage> {
             const SizedBox(height: 20),
 
             const Text(
-              'Detail Transaksi',
+              'Transaction Details',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -448,15 +448,15 @@ class _HistoryPageState extends State<HistoryPage> {
 
             const SizedBox(height: 16),
 
-            _detailRow('ID Transaksi', transaction['id']),
+            _detailRow('Transaction ID', transaction['id']),
             _detailRow('Item', transaction['name']),
-            _detailRow('Deskripsi', transaction['description']),
-            _detailRow('Kategori', transaction['category']),
+            _detailRow('Description', transaction['description']),
+            _detailRow('Category', transaction['category']),
             if (transaction['tier'] != null && transaction['tier'].toString().isNotEmpty)
               _detailRow('Tier', transaction['tier']),
             _detailRow('Points', '${transaction['points']} pts'),
             _detailRow('Status', transaction['status']),
-            _detailRow('Tanggal', _formatDateTime(transaction['date'])),
+            _detailRow('Date', _formatDateTime(transaction['date'])),
 
             const SizedBox(height: 24),
 
@@ -473,7 +473,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   ),
                 ),
                 child: const Text(
-                  'Tutup',
+                  'Close',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -515,18 +515,18 @@ class _HistoryPageState extends State<HistoryPage> {
 
   String _formatDateTime(DateTime date) {
     final months = [
-      'Januari',
-      'Februari',
-      'Maret',
+      'January',
+      'February',
+      'March',
       'April',
-      'Mei',
-      'Juni',
-      'Juli',
-      'Agustus',
+      'May',
+      'June',
+      'July',
+      'August',
       'September',
-      'Oktober',
+      'October',
       'November',
-      'Desember',
+      'December',
     ];
     return '${date.day} ${months[date.month - 1]} ${date.year}, ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
   }
