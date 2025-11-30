@@ -68,19 +68,19 @@ class UserProvider with ChangeNotifier {
         email.isEmpty ||
         phone.isEmpty ||
         password.isEmpty) {
-      return {'success': false, 'message': 'Semua field harus diisi'};
+      return {'success': false, 'message': 'All fields must be filled in'};
     }
 
     if (!email.contains('@')) {
-      return {'success': false, 'message': 'Format email tidak valid'};
+      return {'success': false, 'message': 'Invalid email format'};
     }
 
     if (password.length < 6) {
-      return {'success': false, 'message': 'Password minimal 6 karakter'};
+      return {'success': false, 'message': 'Password must be at least 6 characters'};
     }
 
     if (password != confirmPassword) {
-      return {'success': false, 'message': 'Password tidak cocok'};
+      return {'success': false, 'message': 'Passwords do not match'};
     }
 
     final prefs = await SharedPreferences.getInstance();
@@ -89,7 +89,7 @@ class UserProvider with ChangeNotifier {
     for (String userJson in existingUsers) {
       final user = json.decode(userJson);
       if (user['email'] == email) {
-        return {'success': false, 'message': 'Email sudah terdaftar'};
+        return {'success': false, 'message': 'Email has been registered'};
       }
     }
 
@@ -122,7 +122,7 @@ class UserProvider with ChangeNotifier {
     await _saveUserData();
     notifyListeners();
 
-    return {'success': true, 'message': 'Akun berhasil dibuat'};
+    return {'success': true, 'message': 'Account created successfully'};
   }
 
   Future<Map<String, dynamic>> login({
@@ -130,7 +130,7 @@ class UserProvider with ChangeNotifier {
     required String password,
   }) async {
     if (email.isEmpty || password.isEmpty) {
-      return {'success': false, 'message': 'Email dan password harus diisi'};
+      return {'success': false, 'message': 'Email and password must be filled in'};
     }
 
     final prefs = await SharedPreferences.getInstance();
@@ -153,11 +153,11 @@ class UserProvider with ChangeNotifier {
         await _saveUserData();
         notifyListeners();
 
-        return {'success': true, 'message': 'Login berhasil'};
+        return {'success': true, 'message': 'Login successfully'};
       }
     }
 
-    return {'success': false, 'message': 'Email atau password salah'};
+    return {'success': false, 'message': 'Incorrect email or password'};
   }
 
   Future<Map<String, dynamic>> updateProfile({
@@ -170,7 +170,7 @@ class UserProvider with ChangeNotifier {
     String? avatar,
   }) async {
     if (!_isLoggedIn) {
-      return {'success': false, 'message': 'User tidak login'};
+      return {'success': false, 'message': 'User is not logged in'};
     }
 
     if (fullName != null) _fullName = fullName;
@@ -207,7 +207,7 @@ class UserProvider with ChangeNotifier {
     await prefs.setStringList('registered_users', updatedUsers);
     notifyListeners();
 
-    return {'success': true, 'message': 'Profile berhasil diupdate'};
+    return {'success': true, 'message': 'Profile updated successfully'};
   }
 
   Future<void> updateAvatar(String avatarBase64) async {
