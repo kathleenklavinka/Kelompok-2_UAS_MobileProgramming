@@ -4,6 +4,7 @@ import 'constants/colors.dart';
 import 'pages/home_page.dart';
 import 'providers/point_provider.dart';
 import 'providers/tier_provider.dart';
+import 'providers/transaction_provider.dart';
 
 void main() {
   runApp(
@@ -11,6 +12,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => PointProvider()),
         ChangeNotifierProvider(create: (_) => TierProvider()),
+        ChangeNotifierProvider(create: (_) => TransactionProvider()),
       ],
       child: const LoyaltyApp(),
     ),
