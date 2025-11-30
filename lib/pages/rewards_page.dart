@@ -305,10 +305,6 @@ class _RewardsPageState extends State<RewardsPage>
           expandedHeight: 200,
           pinned: true,
           backgroundColor: _primaryRed,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: _cream),
-            onPressed: () => Navigator.pop(context),
-          ),
           actions: [
             IconButton(
               icon: Icon(Icons.help_outline, color: _cream),
