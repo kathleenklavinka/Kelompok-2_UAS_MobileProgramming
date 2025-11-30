@@ -1,32 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-class AppColors {
-  static const Color red = Color(0xFF8B0000);
-  static const Color gold = Color(0xFFD4AF37);
-  static const Color greenDark = Color(0xFF2C5530);
-  static const Color white = Color(0xFFFFFFFF);
-  static const Color cream = Color(0xFFFEFBF3);
-  static const Color textDark = Color(0xFF2D2D2D);
-  static const Color textGrey = Color(0xFF666666);
-  static const Color errorRed = Color(0xFFB00020);
-  
-  static const Color redLight = Color(0x66800000);
-  static const Color goldLight = Color(0x33D4AF37);
-  static const Color goldMedium = Color(0x4DD4AF37);
-  static const Color goldPale = Color(0x14D4AF37);
-  static const Color whiteTransparent = Color(0x1AFFFFFF);
-  static const Color whiteSemiTransparent = Color(0x4DFFFFFF);
-  static const Color whiteLight = Color(0xB3FFFFFF);
-  static const Color greyLight = Color(0x66666666);
-  static const Color greyPale = Color(0x0D000000);
-  static const Color greyBorder = Color(0x1A000000);
-  static const Color errorLight = Color(0x14B00020);
-  static const Color errorMedium = Color(0x4DB00020);
-  static const Color errorBorder = Color(0xCCB00020);
-  static const Color greenLight = Color(0x4D2C5530);
-  static const Color blackShadow = Color(0x08000000);
-}
+import 'package:azzura_rewards/constants/colors.dart';
 
 class AddPointsPage extends StatefulWidget {
   const AddPointsPage({Key? key}) : super(key: key);
@@ -208,7 +182,7 @@ class _AddPointsPageState extends State<AddPointsPage>
           fontWeight: FontWeight.w800,
           fontSize: 16,
           letterSpacing: 1.5,
-          color: AppColors.textDark,
+          color: AppColors.black,
         ),
       ),
       backgroundColor: AppColors.cream,
@@ -224,17 +198,17 @@ class _AddPointsPageState extends State<AddPointsPage>
       margin: const EdgeInsets.fromLTRB(24, 10, 24, 20),
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.red, Color(0xFF600000)],
+        gradient: LinearGradient(
+          colors: [AppColors.red, AppColors.redDark],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(24),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: AppColors.redLight,
+            color: AppColors.red.withOpacity(0.3),
             blurRadius: 20,
-            offset: Offset(0, 10),
+            offset: const Offset(0, 10),
           ),
         ],
       ),
@@ -248,9 +222,9 @@ class _AddPointsPageState extends State<AddPointsPage>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: AppColors.whiteTransparent,
+                  color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.goldMedium),
+                  border: Border.all(color: AppColors.gold.withOpacity(0.5)),
                 ),
                 child: const Text(
                   'LOYALTY PROGRAM',
@@ -276,10 +250,10 @@ class _AddPointsPageState extends State<AddPointsPage>
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Process transactions to reward loyal customers.',
             style: TextStyle(
-              color: AppColors.whiteLight,
+              color: AppColors.white.withOpacity(0.85),
               fontSize: 14,
             ),
           ),
@@ -295,14 +269,14 @@ class _AddPointsPageState extends State<AddPointsPage>
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.goldLight),
+        border: Border.all(color: AppColors.gold.withOpacity(0.3)),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
-            decoration: const BoxDecoration(
-              color: AppColors.goldPale,
+            decoration: BoxDecoration(
+              color: AppColors.gold.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.info_outline, color: AppColors.gold, size: 20),
@@ -316,7 +290,7 @@ class _AddPointsPageState extends State<AddPointsPage>
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
-                  color: AppColors.textDark,
+                  color: AppColors.black,
                 ),
               ),
               SizedBox(height: 2),
@@ -324,7 +298,7 @@ class _AddPointsPageState extends State<AddPointsPage>
                 'Rp 10.000 = 1 Point',
                 style: TextStyle(
                   fontSize: 13,
-                  color: AppColors.greyLight,
+                  color: AppColors.gray,
                 ),
               ),
             ],
@@ -344,7 +318,7 @@ class _AddPointsPageState extends State<AddPointsPage>
           Text(
             title.toUpperCase(),
             style: const TextStyle(
-              color: AppColors.textDark,
+              color: AppColors.black,
               fontSize: 13,
               fontWeight: FontWeight.w700,
               letterSpacing: 0.5,
@@ -360,11 +334,11 @@ class _AddPointsPageState extends State<AddPointsPage>
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: AppColors.blackShadow,
+            color: AppColors.black.withOpacity(0.05),
             blurRadius: 10,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -372,7 +346,7 @@ class _AddPointsPageState extends State<AddPointsPage>
         controller: _phoneController,
         keyboardType: TextInputType.phone,
         style: const TextStyle(
-          color: AppColors.textDark,
+          color: AppColors.black,
           fontWeight: FontWeight.w600,
           fontSize: 16,
         ),
@@ -382,8 +356,8 @@ class _AddPointsPageState extends State<AddPointsPage>
         ],
         decoration: const InputDecoration(
           hintText: '08XX-XXXX-XXXX',
-          hintStyle: TextStyle(color: AppColors.greyLight),
-          prefixIcon: Icon(Icons.phone_iphone, color: AppColors.textGrey),
+          hintStyle: TextStyle(color: AppColors.gray),
+          prefixIcon: Icon(Icons.phone_iphone, color: AppColors.grayDark),
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         ),
@@ -396,11 +370,11 @@ class _AddPointsPageState extends State<AddPointsPage>
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: AppColors.blackShadow,
+            color: AppColors.black.withOpacity(0.05),
             blurRadius: 10,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -408,7 +382,7 @@ class _AddPointsPageState extends State<AddPointsPage>
         controller: _amountController,
         keyboardType: TextInputType.number,
         style: const TextStyle(
-          color: AppColors.textDark,
+          color: AppColors.black,
           fontWeight: FontWeight.bold,
           fontSize: 18,
         ),
@@ -427,16 +401,16 @@ class _AddPointsPageState extends State<AddPointsPage>
           hintText: '0',
           prefixText: 'Rp ',
           prefixStyle: const TextStyle(
-            color: AppColors.textGrey, 
+            color: AppColors.grayDark, 
             fontWeight: FontWeight.w500,
             fontSize: 18
           ),
-          prefixIcon: const Icon(Icons.monetization_on_outlined, color: AppColors.textGrey),
+          prefixIcon: const Icon(Icons.monetization_on_outlined, color: AppColors.grayDark),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
           suffixIcon: _amountController.text.isNotEmpty 
             ? IconButton(
-                icon: const Icon(Icons.clear, color: AppColors.textGrey),
+                icon: const Icon(Icons.clear, color: AppColors.grayDark),
                 onPressed: () {
                   _amountController.clear();
                   setState(() {});
@@ -489,17 +463,17 @@ class _AddPointsPageState extends State<AddPointsPage>
         duration: const Duration(milliseconds: 250),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.white : AppColors.whiteSemiTransparent,
+          color: isSelected ? AppColors.white : AppColors.white.withOpacity(0.5),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected ? AppColors.gold : Colors.transparent,
             width: 2,
           ),
-          boxShadow: isSelected ? const [
+          boxShadow: isSelected ? [
             BoxShadow(
-              color: AppColors.goldMedium,
+              color: AppColors.gold.withOpacity(0.3),
               blurRadius: 12,
-              offset: Offset(0, 4),
+              offset: const Offset(0, 4),
             )
           ] : [],
         ),
@@ -508,7 +482,7 @@ class _AddPointsPageState extends State<AddPointsPage>
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.goldPale : AppColors.greyPale,
+                color: isSelected ? AppColors.gold.withOpacity(0.15) : AppColors.grayLight.withOpacity(0.3),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(emoji, style: const TextStyle(fontSize: 24)),
@@ -523,7 +497,7 @@ class _AddPointsPageState extends State<AddPointsPage>
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: isSelected ? AppColors.textDark : AppColors.textGrey,
+                      color: isSelected ? AppColors.black : AppColors.grayDark,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -531,7 +505,7 @@ class _AddPointsPageState extends State<AddPointsPage>
                     desc,
                     style: const TextStyle(
                       fontSize: 12,
-                      color: AppColors.greyLight,
+                      color: AppColors.gray,
                     ),
                   ),
                 ],
@@ -554,14 +528,14 @@ class _AddPointsPageState extends State<AddPointsPage>
         padding: const EdgeInsets.all(24),
         width: double.infinity,
         decoration: BoxDecoration(
-          color: AppColors.greyPale,
+          color: AppColors.grayLight.withOpacity(0.2),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.greyBorder),
+          border: Border.all(color: AppColors.grayLight.withOpacity(0.5)),
         ),
         child: const Center(
           child: Text(
             'Enter amount to see points calculation',
-            style: TextStyle(color: AppColors.greyLight),
+            style: TextStyle(color: AppColors.gray),
           ),
         ),
       );
@@ -572,38 +546,38 @@ class _AddPointsPageState extends State<AddPointsPage>
         padding: const EdgeInsets.all(20),
         width: double.infinity,
         decoration: BoxDecoration(
-          color: AppColors.errorLight,
+          color: AppColors.error.withOpacity(0.1),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.errorMedium),
+          border: Border.all(color: AppColors.error.withOpacity(0.3)),
         ),
         child: Row(
           children: [
              Container(
                padding: const EdgeInsets.all(10),
-               decoration: const BoxDecoration(
-                 color: AppColors.errorLight,
+               decoration: BoxDecoration(
+                 color: AppColors.error.withOpacity(0.15),
                  shape: BoxShape.circle,
                ),
-               child: const Icon(Icons.warning_amber_rounded, color: AppColors.errorRed, size: 24),
+               child: const Icon(Icons.warning_amber_rounded, color: AppColors.error, size: 24),
              ),
              const SizedBox(width: 16),
-             const Expanded(
+             Expanded(
                child: Column(
                  crossAxisAlignment: CrossAxisAlignment.start,
                  children: [
-                   Text(
+                   const Text(
                      "Minimum Transaction",
                      style: TextStyle(
-                       color: AppColors.errorRed,
+                       color: AppColors.error,
                        fontWeight: FontWeight.bold,
                        fontSize: 14,
                      ),
                    ),
-                   SizedBox(height: 4),
+                   const SizedBox(height: 4),
                    Text(
                      "Amount must be at least Rp 10.000 to earn points.",
                      style: TextStyle(
-                       color: AppColors.errorBorder,
+                       color: AppColors.error.withOpacity(0.8),
                        fontSize: 12,
                      ),
                    ),
@@ -620,9 +594,9 @@ class _AddPointsPageState extends State<AddPointsPage>
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: AppColors.goldPale,
+        color: AppColors.gold.withOpacity(0.1),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.goldMedium),
+        border: Border.all(color: AppColors.gold.withOpacity(0.3)),
       ),
       child: Column(
         children: [
@@ -644,14 +618,12 @@ class _AddPointsPageState extends State<AddPointsPage>
               fontWeight: FontWeight.w800,
             ),
           ),
-          Container(
-            child: Text(
-              'For Transaction Rp ${_formatRupiah(_amountController.text)}',
-              style: const TextStyle(
-                color: AppColors.textGrey,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              ),
+          Text(
+            'For Transaction Rp ${_formatRupiah(_amountController.text)}',
+            style: const TextStyle(
+              color: AppColors.grayDark,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -672,7 +644,7 @@ class _AddPointsPageState extends State<AddPointsPage>
             borderRadius: BorderRadius.circular(18),
           ),
           elevation: 10,
-          shadowColor: AppColors.goldLight,
+          shadowColor: AppColors.gold.withOpacity(0.3),
         ),
         child: _isLoading
             ? const SizedBox(
@@ -713,10 +685,10 @@ class _AddPointsPageState extends State<AddPointsPage>
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
-                  color: AppColors.textDark,
+                  color: AppColors.black,
                 ),
               ),
-              Icon(Icons.history, color: AppColors.greyLight, size: 20),
+              Icon(Icons.history, color: AppColors.gray, size: 20),
             ],
           ),
         ),
@@ -746,7 +718,7 @@ class _AddPointsPageState extends State<AddPointsPage>
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(16),
-        border: isNew ? Border.all(color: AppColors.greenLight) : null,
+        border: isNew ? Border.all(color: AppColors.success.withOpacity(0.5)) : null,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -757,11 +729,11 @@ class _AddPointsPageState extends State<AddPointsPage>
               Icon(
                 type == 'Dine-in' ? Icons.restaurant : type == 'Takeaway' ? Icons.takeout_dining : Icons.local_shipping,
                 size: 16,
-                color: AppColors.textGrey,
+                color: AppColors.grayDark,
               ),
               Text(
                 time,
-                style: const TextStyle(fontSize: 10, color: AppColors.textGrey),
+                style: const TextStyle(fontSize: 10, color: AppColors.grayDark),
               ),
             ],
           ),
@@ -771,7 +743,7 @@ class _AddPointsPageState extends State<AddPointsPage>
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
-              color: AppColors.textDark,
+              color: AppColors.black,
             ),
           ),
           const SizedBox(height: 4),
@@ -779,7 +751,7 @@ class _AddPointsPageState extends State<AddPointsPage>
             type,
             style: const TextStyle(
               fontSize: 12,
-              color: AppColors.greyLight,
+              color: AppColors.gray,
             ),
           ),
         ],
@@ -796,13 +768,13 @@ class _AddPointsPageState extends State<AddPointsPage>
         content: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           decoration: BoxDecoration(
-            color: AppColors.errorRed,
+            color: AppColors.error,
             borderRadius: BorderRadius.circular(16),
-            boxShadow: const [
+            boxShadow: [
               BoxShadow(
-                color: AppColors.redLight,
+                color: AppColors.error.withOpacity(0.3),
                 blurRadius: 20,
-                offset: Offset(0, 10),
+                offset: const Offset(0, 10),
               ),
             ],
           ),
@@ -810,8 +782,8 @@ class _AddPointsPageState extends State<AddPointsPage>
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
-                decoration: const BoxDecoration(
-                  color: AppColors.whiteSemiTransparent,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.3),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.priority_high_rounded, color: Colors.white, size: 20),
@@ -867,11 +839,11 @@ class _AddPointsPageState extends State<AddPointsPage>
               children: [
                 Container(
                   padding: const EdgeInsets.all(24),
-                  decoration: const BoxDecoration(
-                    color: AppColors.greenLight,
+                  decoration: BoxDecoration(
+                    color: AppColors.success.withOpacity(0.2),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.check_rounded, color: AppColors.greenDark, size: 48),
+                  child: const Icon(Icons.check_rounded, color: AppColors.success, size: 48),
                 ),
                 const SizedBox(height: 24),
                 const Text(
@@ -879,14 +851,14 @@ class _AddPointsPageState extends State<AddPointsPage>
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.textDark,
+                    color: AppColors.black,
                   ),
                 ),
                 const SizedBox(height: 12),
                 RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(
-                    style: const TextStyle(color: AppColors.textGrey, height: 1.5),
+                    style: const TextStyle(color: AppColors.grayDark, height: 1.5),
                     children: [
                       const TextSpan(text: 'You have successfully added '),
                       TextSpan(
@@ -907,7 +879,7 @@ class _AddPointsPageState extends State<AddPointsPage>
                   child: ElevatedButton(
                     onPressed: () => Navigator.of(context).pop(),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.textDark,
+                      backgroundColor: AppColors.black,
                       foregroundColor: AppColors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
