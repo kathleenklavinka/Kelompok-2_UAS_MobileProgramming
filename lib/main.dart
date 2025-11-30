@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'constants/colors.dart';
-import 'pages/home_page.dart';
+import 'pages/login_page.dart';
 import 'providers/point_provider.dart';
 import 'providers/tier_provider.dart';
 import 'providers/transaction_provider.dart';
+import 'providers/user_provider.dart';
 
 void main() {
   runApp(
@@ -13,6 +14,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => PointProvider()),
         ChangeNotifierProvider(create: (_) => TierProvider()),
         ChangeNotifierProvider(create: (_) => TransactionProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
       ],
       child: const LoyaltyApp(),
     ),
@@ -34,7 +36,7 @@ class LoyaltyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      home: const LoginPage(),
       debugShowCheckedModeBanner: false,
     );
   }
