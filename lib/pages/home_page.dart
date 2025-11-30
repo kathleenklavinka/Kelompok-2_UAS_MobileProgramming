@@ -14,6 +14,7 @@ import 'add_points_page.dart';
 import 'tier_page.dart';
 import 'inbox_page.dart';
 import 'promo_detail_page.dart';
+import 'history_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -390,7 +391,14 @@ class _HomeContentState extends State<_HomeContent> {
                             gradient: LinearGradient(
                               colors: [AppColors.green, AppColors.greenDark],
                             ),
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const HistoryPage(),
+                                ),
+                              );
+                            },
                           ),
                           _featureCard(
                             context,
