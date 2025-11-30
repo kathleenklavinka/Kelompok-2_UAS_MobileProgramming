@@ -83,9 +83,10 @@ class _LoginPageState extends State<LoginPage> {
       await Future.delayed(const Duration(milliseconds: 500));
       if (!mounted) return;
 
-      Navigator.push(
+      Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
+        MaterialPageRoute(builder: (_) => const HomePage()),
+        (route) => false,
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -235,10 +236,10 @@ class _LoginPageState extends State<LoginPage> {
                               icon: Icons.email_outlined,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Email tidak boleh kosong';
+                                  return 'Email cannot be empty';
                                 }
                                 if (!value.contains('@')) {
-                                  return 'Format email tidak valid';
+                                  return 'Email format is not valid';
                                 }
                                 return null;
                               },
@@ -254,7 +255,7 @@ class _LoginPageState extends State<LoginPage> {
                                   setState(() => _isObscure = !_isObscure),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Password tidak boleh kosong';
+                                  return 'Password cannot be empty';
                                 }
                                 return null;
                               },

@@ -64,7 +64,7 @@ class _SignupPageState extends State<SignupPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text(
-                      'Selamat Datang!',
+                      'Welcome!',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -110,7 +110,7 @@ class _SignupPageState extends State<SignupPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text(
-                      'Pendaftaran Gagal',
+                      'Registration Failed',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -228,7 +228,7 @@ class _SignupPageState extends State<SignupPage> {
                         icon: Icons.person_outline,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Nama tidak boleh kosong';
+                            return 'Name cannot be empty';
                           }
                           return null;
                         },
@@ -241,10 +241,10 @@ class _SignupPageState extends State<SignupPage> {
                         inputType: TextInputType.phone,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Nomor telepon tidak boleh kosong';
+                            return 'Phone number cannot be empty';
                           }
                           if (value.length < 10) {
-                            return 'Nomor telepon minimal 10 digit';
+                            return 'Phone number is too short';
                           }
                           return null;
                         },
@@ -257,10 +257,10 @@ class _SignupPageState extends State<SignupPage> {
                         inputType: TextInputType.emailAddress,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Email tidak boleh kosong';
+                            return 'Email cannot be empty';
                           }
                           if (!value.contains('@')) {
-                            return 'Format email tidak valid';
+                            return 'Email format is not valid';
                           }
                           return null;
                         },
@@ -276,10 +276,10 @@ class _SignupPageState extends State<SignupPage> {
                             setState(() => _isObscurePass = !_isObscurePass),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Password tidak boleh kosong';
+                            return 'Password cannot be empty';
                           }
                           if (value.length < 6) {
-                            return 'Password minimal 6 karakter';
+                            return 'Password must be at least 6 characters';
                           }
                           return null;
                         },
@@ -296,10 +296,10 @@ class _SignupPageState extends State<SignupPage> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Konfirmasi password tidak boleh kosong';
+                            return 'Confirm Password cannot be empty';
                           }
                           if (value != _passwordController.text) {
-                            return 'Password tidak cocok';
+                            return 'Password does not match';
                           }
                           return null;
                         },
