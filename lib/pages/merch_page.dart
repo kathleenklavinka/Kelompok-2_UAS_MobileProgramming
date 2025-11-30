@@ -313,7 +313,7 @@ class MerchPage extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
 
             Container(
               padding: const EdgeInsets.all(20),
@@ -341,7 +341,7 @@ class MerchPage extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
 
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -366,7 +366,7 @@ class MerchPage extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
 
             SizedBox(
               width: double.infinity,
