@@ -1,16 +1,5 @@
 import 'package:flutter/material.dart';
-
-class AppColors {
-  // Brand Palette Copy
-  static const Color red = Color(0xFF821F06);
-  static const Color green = Color(0xFF7D8D36); // Green for Signup Accent
-  static const Color greenDark = Color(0xFF5C6925);
-  static const Color cream = Color(0xFFF5ECDD);
-  static const Color white = Color(0xFFFFFFFF);
-  static const Color gold = Color(0xFFC4A46A);
-  static const Color gray = Color(0xFF8A837A);
-  static const Color textDark = Color(0xFF2D2D2D);
-}
+import 'package:azzura_rewards/constants/colors.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({Key? key}) : super(key: key);
@@ -30,7 +19,7 @@ class _SignupPageState extends State<SignupPage> {
 
     return Scaffold(
       backgroundColor: AppColors.cream,
-      extendBodyBehindAppBar: true, // Agar AppBar transparan di atas background
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -41,16 +30,13 @@ class _SignupPageState extends State<SignupPage> {
       ),
       body: SingleChildScrollView(
         child: SizedBox(
-          // Gunakan constraint minHeight agar pas di layar panjang, tapi bisa scroll jika overflow
           child: Stack(
             children: [
-              // 1. BACKGROUND HEADER (Green Theme for Fresh Start)
               Container(
                 height: size.height * 0.40,
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    // Menggunakan Hijau sesuai palet Anda, atau bisa tetap Merah jika ingin konsisten
-                    colors: [AppColors.greenDark, AppColors.green], 
+                    colors: [AppColors.greenDark, AppColors.green],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -61,7 +47,6 @@ class _SignupPageState extends State<SignupPage> {
                 ),
               ),
 
-              // 2. HEADER TEXT
               Positioned(
                 top: size.height * 0.12,
                 left: 24,
@@ -89,7 +74,6 @@ class _SignupPageState extends State<SignupPage> {
                 ),
               ),
 
-              // 3. FLOATING FORM
               Container(
                 margin: EdgeInsets.only(top: size.height * 0.28, left: 24, right: 24, bottom: 30),
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -142,7 +126,6 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                       const SizedBox(height: 32),
                       
-                      // SIGNUP BUTTON
                       Container(
                         width: double.infinity,
                         height: 55,
@@ -160,9 +143,7 @@ class _SignupPageState extends State<SignupPage> {
                           ],
                         ),
                         child: ElevatedButton(
-                          onPressed: () {
-                            // Signup Action
-                          },
+                          onPressed: () {},
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
                             shadowColor: Colors.transparent,
@@ -222,9 +203,9 @@ class _SignupPageState extends State<SignupPage> {
           child: TextFormField(
             obscureText: isPassword ? isObscure : false,
             keyboardType: inputType,
-            style: const TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w600),
+            style: const TextStyle(color: AppColors.foreground, fontWeight: FontWeight.w600),
             decoration: InputDecoration(
-              prefixIcon: Icon(icon, color: AppColors.greenDark), // Green icon for signup
+              prefixIcon: Icon(icon, color: AppColors.greenDark),
               suffixIcon: isPassword
                   ? IconButton(
                       icon: Icon(
