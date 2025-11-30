@@ -1,5 +1,8 @@
+import 'package:azzura_rewards/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:azzura_rewards/constants/colors.dart';
+import 'package:provider/provider.dart';
+import '../providers/user_provider.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({Key? key}) : super(key: key);
@@ -10,8 +13,130 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
+  final _fullNameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+
   bool _isObscurePass = true;
   bool _isObscureConfirm = true;
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _fullNameController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleSignup() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    final userProvider = context.read<UserProvider>();
+    final result = await userProvider.signup(
+      fullName: _fullNameController.text.trim(),
+      email: _emailController.text.trim(),
+      phone: _phoneController.text.trim(),
+      password: _passwordController.text,
+      confirmPassword: _confirmPasswordController.text,
+    );
+
+    setState(() => _isLoading = false);
+
+    if (!mounted) return;
+
+    if (result['success']) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.celebration, color: Colors.white),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Selamat Datang!',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      result['message'],
+                      style: const TextStyle(fontSize: 13),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: AppColors.success,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          duration: const Duration(seconds: 3),
+          margin: const EdgeInsets.all(16),
+        ),
+      );
+
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (!mounted) return;
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.error_outline, color: Colors.white),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Pendaftaran Gagal',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      result['message'],
+                      style: const TextStyle(fontSize: 13),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: AppColors.red,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          duration: const Duration(seconds: 4),
+          margin: const EdgeInsets.all(16),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,18 +190,23 @@ class _SignupPageState extends State<SignupPage> {
                     SizedBox(height: 8),
                     Text(
                       "Start earning rewards today.",
-                      style: TextStyle(
-                        color: AppColors.cream,
-                        fontSize: 16,
-                      ),
+                      style: TextStyle(color: AppColors.cream, fontSize: 16),
                     ),
                   ],
                 ),
               ),
 
               Container(
-                margin: EdgeInsets.only(top: size.height * 0.28, left: 24, right: 24, bottom: 30),
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                margin: EdgeInsets.only(
+                  top: size.height * 0.28,
+                  left: 24,
+                  right: 24,
+                  bottom: 30,
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 32,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.white,
                   borderRadius: BorderRadius.circular(30),
@@ -93,39 +223,89 @@ class _SignupPageState extends State<SignupPage> {
                   child: Column(
                     children: [
                       _buildLuxuryTextField(
+                        controller: _fullNameController,
                         label: "Full Name",
                         icon: Icons.person_outline,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Nama tidak boleh kosong';
+                          }
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 16),
                       _buildLuxuryTextField(
+                        controller: _phoneController,
                         label: "Phone Number",
                         icon: Icons.phone_iphone,
                         inputType: TextInputType.phone,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Nomor telepon tidak boleh kosong';
+                          }
+                          if (value.length < 10) {
+                            return 'Nomor telepon minimal 10 digit';
+                          }
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 16),
                       _buildLuxuryTextField(
+                        controller: _emailController,
                         label: "Email Address",
                         icon: Icons.email_outlined,
                         inputType: TextInputType.emailAddress,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Email tidak boleh kosong';
+                          }
+                          if (!value.contains('@')) {
+                            return 'Format email tidak valid';
+                          }
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 16),
                       _buildLuxuryTextField(
+                        controller: _passwordController,
                         label: "Password",
                         icon: Icons.lock_outline,
                         isPassword: true,
                         isObscure: _isObscurePass,
-                        onToggle: () => setState(() => _isObscurePass = !_isObscurePass),
+                        onToggle: () =>
+                            setState(() => _isObscurePass = !_isObscurePass),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Password tidak boleh kosong';
+                          }
+                          if (value.length < 6) {
+                            return 'Password minimal 6 karakter';
+                          }
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 16),
                       _buildLuxuryTextField(
+                        controller: _confirmPasswordController,
                         label: "Confirm Password",
                         icon: Icons.verified_user_outlined,
                         isPassword: true,
                         isObscure: _isObscureConfirm,
-                        onToggle: () => setState(() => _isObscureConfirm = !_isObscureConfirm),
+                        onToggle: () => setState(
+                          () => _isObscureConfirm = !_isObscureConfirm,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Konfirmasi password tidak boleh kosong';
+                          }
+                          if (value != _passwordController.text) {
+                            return 'Password tidak cocok';
+                          }
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 32),
-                      
+
                       Container(
                         width: double.infinity,
                         height: 55,
@@ -143,7 +323,7 @@ class _SignupPageState extends State<SignupPage> {
                           ],
                         ),
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: _isLoading ? null : _handleSignup,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
                             shadowColor: Colors.transparent,
@@ -151,15 +331,24 @@ class _SignupPageState extends State<SignupPage> {
                               borderRadius: BorderRadius.circular(15),
                             ),
                           ),
-                          child: const Text(
-                            "CREATE ACCOUNT",
-                            style: TextStyle(
-                              color: AppColors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              letterSpacing: 1.0,
-                            ),
-                          ),
+                          child: _isLoading
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    color: AppColors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Text(
+                                  "CREATE ACCOUNT",
+                                  style: TextStyle(
+                                    color: AppColors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    letterSpacing: 1.0,
+                                  ),
+                                ),
                         ),
                       ),
                     ],
@@ -174,12 +363,14 @@ class _SignupPageState extends State<SignupPage> {
   }
 
   Widget _buildLuxuryTextField({
+    required TextEditingController controller,
     required String label,
     required IconData icon,
     TextInputType inputType = TextInputType.text,
     bool isPassword = false,
     bool isObscure = false,
     VoidCallback? onToggle,
+    String? Function(String?)? validator,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,15 +392,22 @@ class _SignupPageState extends State<SignupPage> {
             border: Border.all(color: AppColors.gray.withOpacity(0.2)),
           ),
           child: TextFormField(
+            controller: controller,
             obscureText: isPassword ? isObscure : false,
             keyboardType: inputType,
-            style: const TextStyle(color: AppColors.foreground, fontWeight: FontWeight.w600),
+            style: const TextStyle(
+              color: AppColors.foreground,
+              fontWeight: FontWeight.w600,
+            ),
+            validator: validator,
             decoration: InputDecoration(
               prefixIcon: Icon(icon, color: AppColors.greenDark),
               suffixIcon: isPassword
                   ? IconButton(
                       icon: Icon(
-                        isObscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                        isObscure
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
                         color: AppColors.gray,
                         size: 20,
                       ),
@@ -217,7 +415,11 @@ class _SignupPageState extends State<SignupPage> {
                     )
                   : null,
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
+              ),
+              errorStyle: const TextStyle(fontSize: 11),
             ),
           ),
         ),

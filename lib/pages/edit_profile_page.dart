@@ -2,10 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:azzura_rewards/constants/colors.dart';
-import 'package:azzura_rewards/services/profile_service.dart';
 import 'dart:typed_data';
 import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
+import 'package:provider/provider.dart';
+import '../providers/user_provider.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -26,6 +27,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   String selectedPrefix = '+62';
   Uint8List? avatarBytes;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -33,26 +35,37 @@ class _EditProfilePageState extends State<EditProfilePage> {
     _loadInitial();
   }
 
+  @override
+  void dispose() {
+    nameC.dispose();
+    emailC.dispose();
+    phoneC.dispose();
+    addressC.dispose();
+    usernameC.dispose();
+    passwordC.dispose();
+    super.dispose();
+  }
+
   Future<void> _loadInitial() async {
-    final data = await ProfileService.loadProfile();
+    final userProvider = context.read<UserProvider>();
 
-    nameC.text = data["name"] ?? "";
-    emailC.text = data["email"] ?? "";
-    phoneC.text = data["phone"] ?? "";
-    addressC.text = data["address"] ?? "";
-    usernameC.text = data["username"] ?? "";
-    passwordC.text = data["password"] ?? "";
+    nameC.text = userProvider.fullName;
+    emailC.text = userProvider.email;
+    addressC.text = userProvider.address;
+    usernameC.text = userProvider.username;
+    passwordC.text = userProvider.password;
 
+    String phone = userProvider.phone;
     for (var p in prefixOptions) {
       final noPlus = p.replaceAll('+', '');
 
-      if (phoneC.text.startsWith(p)) {
+      if (phone.startsWith(p)) {
         selectedPrefix = p;
-        phoneC.text = phoneC.text.substring(p.length);
+        phoneC.text = phone.substring(p.length);
         break;
-      } else if (phoneC.text.startsWith(noPlus)) {
+      } else if (phone.startsWith(noPlus)) {
         selectedPrefix = p;
-        phoneC.text = phoneC.text.substring(noPlus.length);
+        phoneC.text = phone.substring(noPlus.length);
         break;
       }
     }
@@ -61,8 +74,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
       selectedPrefix = prefixOptions.first;
     }
 
-    if (data["avatar"] != null && data["avatar"]!.isNotEmpty) {
-      avatarBytes = base64Decode(data["avatar"]!);
+    if (userProvider.avatar.isNotEmpty) {
+      try {
+        avatarBytes = base64Decode(userProvider.avatar);
+      } catch (e) {
+        debugPrint('Error decoding avatar: $e');
+      }
     }
 
     setState(() {});
@@ -71,11 +88,116 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Future<void> _pickAvatar() async {
     final result = await FilePicker.platform.pickFiles(type: FileType.image);
     if (result != null && result.files.first.bytes != null) {
-      avatarBytes = result.files.first.bytes!;
-      final base64Str = base64Encode(avatarBytes!);
-      await ProfileService.saveAvatar(base64Str);
-      setState(() {});
+      setState(() {
+        avatarBytes = result.files.first.bytes!;
+      });
     }
+  }
+
+  Future<void> _saveProfile() async {
+    if (nameC.text.isEmpty) {
+      _showError('Nama tidak boleh kosong');
+      return;
+    }
+
+    if (emailC.text.isEmpty || !emailC.text.contains('@')) {
+      _showError('Email tidak valid');
+      return;
+    }
+
+    if (phoneC.text.isEmpty) {
+      _showError('Nomor telepon tidak boleh kosong');
+      return;
+    }
+
+    if (usernameC.text.isEmpty) {
+      _showError('Username tidak boleh kosong');
+      return;
+    }
+
+    if (passwordC.text.isEmpty) {
+      _showError('Password tidak boleh kosong');
+      return;
+    }
+
+    if (passwordC.text.length < 6) {
+      _showError('Password minimal 6 karakter');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    final userProvider = context.read<UserProvider>();
+
+    String avatarBase64 = '';
+    if (avatarBytes != null) {
+      avatarBase64 = base64Encode(avatarBytes!);
+    }
+
+    final result = await userProvider.updateProfile(
+      fullName: nameC.text.trim(),
+      email: emailC.text.trim(),
+      phone: "$selectedPrefix${phoneC.text.trim()}",
+      address: addressC.text.trim(),
+      username: usernameC.text.trim(),
+      password: passwordC.text,
+      avatar: avatarBase64,
+    );
+
+    setState(() => _isLoading = false);
+
+    if (!mounted) return;
+
+    if (result['success']) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.check_circle, color: Colors.white),
+              const SizedBox(width: 8),
+              Text(result['message']),
+            ],
+          ),
+          backgroundColor: AppColors.success,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      );
+      Navigator.pop(context, true);
+    } else {
+      _showError(result['message']);
+    }
+  }
+
+  void _showError(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Row(
+          children: [
+            Icon(Icons.error_outline, color: AppColors.red),
+            SizedBox(width: 8),
+            Text('Error'),
+          ],
+        ),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'OK',
+              style: TextStyle(
+                color: AppColors.red,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -86,10 +208,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         backgroundColor: AppColors.redDark,
         title: const Text(
           "Edit Profile",
-          style: TextStyle(
-            color: AppColors.white,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: AppColors.white, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         leading: const BackButton(color: AppColors.white),
@@ -103,15 +222,43 @@ class _EditProfilePageState extends State<EditProfilePage> {
               children: [
                 GestureDetector(
                   onTap: _pickAvatar,
-                  child: CircleAvatar(
-                    radius: 50,
-                    backgroundColor: AppColors.redLight.withOpacity(0.2),
-                    backgroundImage:
-                        avatarBytes != null ? MemoryImage(avatarBytes!) : null,
-                    child: avatarBytes == null
-                        ? const Icon(Icons.person,
-                            size: 50, color: AppColors.redDark)
-                        : null,
+                  child: Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 50,
+                        backgroundColor: AppColors.redLight.withOpacity(0.2),
+                        backgroundImage: avatarBytes != null
+                            ? MemoryImage(avatarBytes!)
+                            : null,
+                        child: avatarBytes == null
+                            ? const Icon(
+                                Icons.person,
+                                size: 50,
+                                color: AppColors.redDark,
+                              )
+                            : null,
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: AppColors.redDark,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: AppColors.white,
+                              width: 2,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.camera_alt,
+                            size: 16,
+                            color: AppColors.white,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(width: 20),
@@ -121,14 +268,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     children: [
                       TextField(
                         controller: nameC,
-                        decoration:
-                            _inputDecoration("Full Name", Icons.person_outline),
+                        decoration: _inputDecoration(
+                          "Full Name",
+                          Icons.person_outline,
+                        ),
                       ),
                       const SizedBox(height: 12),
                       TextField(
                         controller: emailC,
-                        decoration:
-                            _inputDecoration("Email", Icons.email_outlined),
+                        decoration: _inputDecoration(
+                          "Email",
+                          Icons.email_outlined,
+                        ),
                       ),
                     ],
                   ),
@@ -160,9 +311,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         items: prefixOptions.map((prefix) {
                           return DropdownMenuItem(
                             value: prefix,
-                            child: Text(prefix,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold)),
+                            child: Text(
+                              prefix,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           );
                         }).toList(),
                         onChanged: (v) {
@@ -179,15 +333,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       child: TextField(
                         controller: phoneC,
                         keyboardType: TextInputType.phone,
-                        decoration: _inputDecoration("Phone Number", Icons.phone_outlined)
-                            .copyWith(prefixText: "$selectedPrefix "),
+                        decoration: _inputDecoration(
+                          "Phone Number",
+                          Icons.phone_outlined,
+                        ).copyWith(prefixText: "$selectedPrefix "),
                         onChanged: (value) {
                           for (var p in prefixOptions) {
                             if (value.startsWith(p)) {
                               final clean = value.replaceFirst(p, "").trim();
                               phoneC.value = TextEditingValue(
                                 text: clean,
-                                selection: TextSelection.collapsed(offset: clean.length),
+                                selection: TextSelection.collapsed(
+                                  offset: clean.length,
+                                ),
                               );
                               break;
                             }
@@ -202,8 +360,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
                 TextField(
                   controller: addressC,
-                  decoration:
-                      _inputDecoration("Address", Icons.location_on_outlined),
+                  decoration: _inputDecoration(
+                    "Address",
+                    Icons.location_on_outlined,
+                  ),
                 ),
 
                 const SizedBox(height: 16),
@@ -211,7 +371,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 TextField(
                   controller: usernameC,
                   decoration: _inputDecoration(
-                      "Username", Icons.person_pin_outlined),
+                    "Username",
+                    Icons.person_pin_outlined,
+                  ),
                 ),
 
                 const SizedBox(height: 16),
@@ -219,8 +381,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 TextField(
                   controller: passwordC,
                   obscureText: true,
-                  decoration:
-                      _inputDecoration("Password", Icons.lock_outline),
+                  decoration: _inputDecoration("Password", Icons.lock_outline),
                 ),
               ],
             ),
@@ -230,17 +391,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () async {
-                  await ProfileService.saveProfile(
-                    name: nameC.text,
-                    email: emailC.text,
-                    phone: "$selectedPrefix${phoneC.text}",
-                    address: addressC.text,
-                    username: usernameC.text,
-                    password: passwordC.text,
-                  );
-                  Navigator.pop(context, true);
-                },
+                onPressed: _isLoading ? null : _saveProfile,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.redDark,
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -248,14 +399,23 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
-                  "Save Changes",
-                  style: TextStyle(
-                    color: AppColors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: AppColors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : const Text(
+                        "Save Changes",
+                        style: TextStyle(
+                          color: AppColors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
               ),
             ),
           ],
@@ -274,8 +434,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ),
       filled: true,
       fillColor: AppColors.white.withOpacity(0.9),
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
@@ -283,7 +442,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(
-            color: AppColors.redDark.withOpacity(0.3), width: 1),
+          color: AppColors.redDark.withOpacity(0.3),
+          width: 1,
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),

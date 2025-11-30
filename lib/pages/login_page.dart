@@ -1,6 +1,9 @@
+import 'package:azzura_rewards/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:azzura_rewards/constants/colors.dart';
 import 'package:azzura_rewards/pages/signup_page.dart';
+import 'package:provider/provider.dart';
+import '../providers/user_provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -14,6 +17,116 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isObscure = true;
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleLogin() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    final userProvider = context.read<UserProvider>();
+    final result = await userProvider.login(
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+    );
+
+    setState(() => _isLoading = false);
+
+    if (!mounted) return;
+
+    if (result['success']) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.check_circle, color: Colors.white),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Login Berhasil!',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Selamat datang kembali, ${userProvider.fullName}',
+                      style: const TextStyle(fontSize: 13),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: AppColors.success,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          duration: const Duration(seconds: 2),
+          margin: const EdgeInsets.all(16),
+        ),
+      );
+
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (!mounted) return;
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.error_outline, color: Colors.white),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Login Gagal',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      result['message'],
+                      style: const TextStyle(fontSize: 13),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: AppColors.red,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          duration: const Duration(seconds: 3),
+          margin: const EdgeInsets.all(16),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -120,6 +233,15 @@ class _LoginPageState extends State<LoginPage> {
                               controller: _emailController,
                               hint: "Email Address",
                               icon: Icons.email_outlined,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Email tidak boleh kosong';
+                                }
+                                if (!value.contains('@')) {
+                                  return 'Format email tidak valid';
+                                }
+                                return null;
+                              },
                             ),
                             const SizedBox(height: 20),
                             _buildLuxuryTextField(
@@ -128,7 +250,14 @@ class _LoginPageState extends State<LoginPage> {
                               icon: Icons.lock_outline,
                               isPassword: true,
                               isObscure: _isObscure,
-                              onToggle: () => setState(() => _isObscure = !_isObscure),
+                              onToggle: () =>
+                                  setState(() => _isObscure = !_isObscure),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Password tidak boleh kosong';
+                                }
+                                return null;
+                              },
                             ),
                             const SizedBox(height: 15),
                             Align(
@@ -158,7 +287,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ],
                               ),
                               child: ElevatedButton(
-                                onPressed: () {},
+                                onPressed: _isLoading ? null : _handleLogin,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.transparent,
                                   shadowColor: Colors.transparent,
@@ -166,15 +295,24 @@ class _LoginPageState extends State<LoginPage> {
                                     borderRadius: BorderRadius.circular(15),
                                   ),
                                 ),
-                                child: const Text(
-                                  "SIGN IN",
-                                  style: TextStyle(
-                                    color: AppColors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    letterSpacing: 1.0,
-                                  ),
-                                ),
+                                child: _isLoading
+                                    ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          color: AppColors.white,
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : const Text(
+                                        "SIGN IN",
+                                        style: TextStyle(
+                                          color: AppColors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                          letterSpacing: 1.0,
+                                        ),
+                                      ),
                               ),
                             ),
                           ],
@@ -185,12 +323,17 @@ class _LoginPageState extends State<LoginPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text("New Member? ", style: TextStyle(color: AppColors.gray)),
+                        const Text(
+                          "New Member? ",
+                          style: TextStyle(color: AppColors.gray),
+                        ),
                         GestureDetector(
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => const SignupPage()),
+                              MaterialPageRoute(
+                                builder: (context) => const SignupPage(),
+                              ),
                             );
                           },
                           child: const Text(
@@ -202,7 +345,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -220,6 +363,7 @@ class _LoginPageState extends State<LoginPage> {
     bool isPassword = false,
     bool isObscure = false,
     VoidCallback? onToggle,
+    String? Function(String?)? validator,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -229,7 +373,11 @@ class _LoginPageState extends State<LoginPage> {
       child: TextFormField(
         controller: controller,
         obscureText: isPassword ? isObscure : false,
-        style: const TextStyle(color: AppColors.foreground, fontWeight: FontWeight.w600),
+        style: const TextStyle(
+          color: AppColors.foreground,
+          fontWeight: FontWeight.w600,
+        ),
+        validator: validator,
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: const TextStyle(color: AppColors.gray, fontSize: 14),
@@ -237,7 +385,9 @@ class _LoginPageState extends State<LoginPage> {
           suffixIcon: isPassword
               ? IconButton(
                   icon: Icon(
-                    isObscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                    isObscure
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
                     color: AppColors.gray,
                     size: 20,
                   ),
@@ -245,7 +395,11 @@ class _LoginPageState extends State<LoginPage> {
                 )
               : null,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 16,
+          ),
+          errorStyle: const TextStyle(fontSize: 11),
         ),
       ),
     );

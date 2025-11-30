@@ -15,6 +15,7 @@ import 'tier_page.dart';
 import 'inbox_page.dart';
 import 'promo_detail_page.dart';
 import 'history_page.dart';
+import '../providers/user_provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -151,6 +152,7 @@ class _HomeContentState extends State<_HomeContent> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = context.watch<UserProvider>();
     return Consumer2<PointProvider, TierProvider>(
       builder: (context, pointProvider, tierProvider, child) {
         final points = pointProvider.points;
@@ -227,7 +229,7 @@ class _HomeContentState extends State<_HomeContent> {
                     child: Column(
                       children: [
                         LoyaltyCard(
-                          userName: 'Morris',
+                          userName: userProvider.fullName,
                           currentTier: currentTier,
                         ),
                         const SizedBox(height: 20),
@@ -513,7 +515,7 @@ class _HomeContentState extends State<_HomeContent> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(7),
                 decoration: BoxDecoration(
                   color: AppColors.white.withOpacity(0.3),
                   borderRadius: BorderRadius.circular(12),

@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:azzura_rewards/providers/user_provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:azzura_rewards/constants/colors.dart';
@@ -26,7 +27,8 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin {
+class _ProfilePageState extends State<ProfilePage>
+    with TickerProviderStateMixin {
   Map<String, String> profileData = {};
   Uint8List? avatarBytes;
 
@@ -44,8 +46,7 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
   late Animation<double> _avatarScale;
 
   Map<String, AnimationController> _badgeControllers = {};
-  List<Map<String, dynamic>> _activities = 
-  [
+  List<Map<String, dynamic>> _activities = [
     {
       "id": "first_purchase",
       "title": "Make your first purchase",
@@ -77,21 +78,30 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
     _loadBadges();
 
     _controller = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 800));
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
     _fade = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
-    _slide = Tween(begin: const Offset(0, 0.2), end: Offset.zero)
-        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
-    
+    _slide = Tween(
+      begin: const Offset(0, 0.2),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+
     _streakController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 1500))
-      ..repeat(reverse: true);
-    _streakPulse = Tween<double>(begin: 1.0, end: 1.15)
-        .animate(CurvedAnimation(parent: _streakController, curve: Curves.easeInOut));
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat(reverse: true);
+    _streakPulse = Tween<double>(begin: 1.0, end: 1.15).animate(
+      CurvedAnimation(parent: _streakController, curve: Curves.easeInOut),
+    );
 
     _avatarController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 300));
-    _avatarScale = Tween<double>(begin: 1.0, end: 0.95)
-        .animate(CurvedAnimation(parent: _avatarController, curve: Curves.easeInOut));
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _avatarScale = Tween<double>(begin: 1.0, end: 0.95).animate(
+      CurvedAnimation(parent: _avatarController, curve: Curves.easeInOut),
+    );
 
     _controller.forward();
   }
@@ -146,8 +156,8 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
   String greetingEmoji() {
     final h = DateTime.now().hour;
     if (h >= 5 && h < 12) return "🌞";
-    if (h >= 12 && h < 17) return "🌤️";
-    if (h >= 17 && h < 21) return "🌥️";
+    if (h >= 12 && h < 17) return "🌤";
+    if (h >= 17 && h < 21) return "🌥";
     return "🌝";
   }
 
@@ -228,7 +238,9 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
           curve: Curves.elasticOut,
         ),
         child: AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
           backgroundColor: AppColors.cream,
           title: Column(
             children: [
@@ -270,13 +282,19 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.red,
                   foregroundColor: AppColors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 12,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
                 onPressed: () => Navigator.pop(context),
-                child: const Text("Awesome!", style: TextStyle(fontWeight: FontWeight.bold)),
+                child: const Text(
+                  "Awesome!",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
             ),
           ],
@@ -296,12 +314,16 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: badges.contains(key) ? _colorForBadge(key) : AppColors.grayLight,
+                color: badges.contains(key)
+                    ? _colorForBadge(key)
+                    : AppColors.grayLight,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 _iconForBadge(key),
-                color: badges.contains(key) ? AppColors.white : AppColors.grayDark,
+                color: badges.contains(key)
+                    ? AppColors.white
+                    : AppColors.grayDark,
                 size: 24,
               ),
             ),
@@ -318,9 +340,9 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
           ],
         ),
         content: Text(
-          badges.contains(key) 
-            ? "You've earned this badge! Keep up the great work!"
-            : "Complete the required actions to unlock this badge.",
+          badges.contains(key)
+              ? "You've earned this badge! Keep up the great work!"
+              : "Complete the required actions to unlock this badge.",
           style: TextStyle(color: AppColors.greenDark),
         ),
         actions: [
@@ -333,7 +355,12 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
     );
   }
 
-  Widget _buildMenuItem(IconData icon, String title, {String? trailing, VoidCallback? onTap}) {
+  Widget _buildMenuItem(
+    IconData icon,
+    String title, {
+    String? trailing,
+    VoidCallback? onTap,
+  }) {
     return FadeTransition(
       opacity: _fade,
       child: SlideTransition(
@@ -343,7 +370,10 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
           decoration: BoxDecoration(
             color: AppColors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.grayLight.withOpacity(0.3), width: 1),
+            border: Border.all(
+              color: AppColors.grayLight.withOpacity(0.3),
+              width: 1,
+            ),
             boxShadow: [
               BoxShadow(
                 color: AppColors.redDark.withOpacity(0.08),
@@ -382,7 +412,10 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
                     ),
                     if (trailing != null)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.greenLight.withOpacity(0.15),
                           borderRadius: BorderRadius.circular(8),
@@ -397,8 +430,11 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
                         ),
                       ),
                     const SizedBox(width: 8),
-                    Icon(Icons.arrow_forward_ios,
-                        size: 14, color: AppColors.grayDark.withOpacity(0.5)),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      size: 14,
+                      color: AppColors.grayDark.withOpacity(0.5),
+                    ),
                   ],
                 ),
               ),
@@ -454,7 +490,7 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          for (final badgeKey in ['first_purchase','referral_1','visit_5'])
+          for (final badgeKey in ['first_purchase', 'referral_1', 'visit_5'])
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -482,7 +518,9 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
                           boxShadow: badges.contains(badgeKey)
                               ? [
                                   BoxShadow(
-                                    color: _colorForBadge(badgeKey).withOpacity(0.4),
+                                    color: _colorForBadge(
+                                      badgeKey,
+                                    ).withOpacity(0.4),
                                     blurRadius: 12,
                                     offset: const Offset(0, 4),
                                   ),
@@ -549,12 +587,13 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
       tier: '',
       status: 'completed',
     );
-    
+
     await saveBadges(badges);
   }
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = context.watch<UserProvider>();
     return Scaffold(
       backgroundColor: AppColors.cream,
       appBar: AppBar(
@@ -613,7 +652,10 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
                           child: Container(
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              border: Border.all(color: AppColors.white, width: 3),
+                              border: Border.all(
+                                color: AppColors.white,
+                                width: 3,
+                              ),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.2),
@@ -625,11 +667,15 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
                             child: CircleAvatar(
                               radius: 40,
                               backgroundColor: AppColors.green,
-                              backgroundImage:
-                                  avatarBytes != null ? MemoryImage(avatarBytes!) : null,
+                              backgroundImage: avatarBytes != null
+                                  ? MemoryImage(avatarBytes!)
+                                  : null,
                               child: avatarBytes == null
-                                  ? const Icon(Icons.person,
-                                      size: 40, color: AppColors.cream)
+                                  ? const Icon(
+                                      Icons.person,
+                                      size: 40,
+                                      color: AppColors.cream,
+                                    )
                                   : null,
                             ),
                           ),
@@ -641,7 +687,7 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              profileData["name"] ?? "--",
+                              userProvider.fullName,
                               style: const TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
@@ -652,13 +698,15 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
                             const SizedBox(height: 4),
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 4),
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
-                                formatPhone(profileData["phone"]),
+                                formatPhone(userProvider.phone),
                                 style: const TextStyle(
                                   fontSize: 13,
                                   color: AppColors.white,
@@ -675,12 +723,16 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: IconButton(
-                          icon: const Icon(Icons.edit_rounded, color: AppColors.white),
+                          icon: const Icon(
+                            Icons.edit_rounded,
+                            color: AppColors.white,
+                          ),
                           onPressed: () async {
                             final result = await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const EditProfilePage()),
+                                builder: (context) => const EditProfilePage(),
+                              ),
                             );
                             if (result == true) _loadData();
                           },
@@ -711,7 +763,9 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
                     ),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                        color: AppColors.greenLight.withOpacity(0.3), width: 1),
+                      color: AppColors.greenLight.withOpacity(0.3),
+                      width: 1,
+                    ),
                   ),
                   child: Row(
                     children: [
@@ -769,7 +823,9 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
                     ),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                        color: AppColors.gold.withOpacity(0.3), width: 2),
+                      color: AppColors.gold.withOpacity(0.3),
+                      width: 2,
+                    ),
                     boxShadow: [
                       BoxShadow(
                         color: AppColors.gold.withOpacity(0.1),
@@ -786,7 +842,10 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [AppColors.gold, AppColors.gold.withOpacity(0.7)],
+                              colors: [
+                                AppColors.gold,
+                                AppColors.gold.withOpacity(0.7),
+                              ],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
@@ -836,7 +895,9 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
                           backgroundColor: AppColors.red,
                           foregroundColor: AppColors.white,
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 12),
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -848,15 +909,18 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
                               !isSameDate(lastCheckIn!, now)) {
                             if (lastCheckIn != null &&
                                 isSameDate(
-                                    lastCheckIn!.add(const Duration(days: 1)),
-                                    now)) {
+                                  lastCheckIn!.add(const Duration(days: 1)),
+                                  now,
+                                )) {
                               streakDays++;
                             } else {
                               streakDays = 1;
                             }
                             lastCheckIn = now;
                             await ProfileService.saveStreak(
-                                streakDays, lastCheckIn!.toIso8601String());
+                              streakDays,
+                              lastCheckIn!.toIso8601String(),
+                            );
                             setState(() {});
                             if (streakDays == 5) _unlockBadge("visit_5");
                           }
@@ -887,8 +951,11 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.emoji_events_outlined, 
-                            color: AppColors.grayDark, size: 24),
+                        Icon(
+                          Icons.emoji_events_outlined,
+                          color: AppColors.grayDark,
+                          size: 24,
+                        ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
@@ -935,7 +1002,7 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
                             color: AppColors.black.withOpacity(0.05),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
-                          )
+                          ),
                         ],
                       ),
                       child: Row(
@@ -949,8 +1016,12 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Icon(
-                              completed ? Icons.check_circle : Icons.flag_outlined,
-                              color: completed ? AppColors.greenDark : AppColors.grayDark,
+                              completed
+                                  ? Icons.check_circle
+                                  : Icons.flag_outlined,
+                              color: completed
+                                  ? AppColors.greenDark
+                                  : AppColors.grayDark,
                               size: 22,
                             ),
                           ),
@@ -985,8 +1056,9 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
                           Icon(
                             completed ? Icons.done : Icons.arrow_forward_ios,
                             size: 14,
-                            color:
-                                completed ? AppColors.greenDark : AppColors.grayDark,
+                            color: completed
+                                ? AppColors.greenDark
+                                : AppColors.grayDark,
                           ),
                         ],
                       ),
@@ -1004,7 +1076,9 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
               "Saved Address",
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const SavedAddressPage()),
+                MaterialPageRoute(
+                  builder: (context) => const SavedAddressPage(),
+                ),
               ),
             ),
             _buildMenuItem(
@@ -1024,7 +1098,11 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
                 MaterialPageRoute(builder: (context) => const ContactUsPage()),
               ),
             ),
-            _buildMenuItem(Icons.star_border, "Rate Our App", trailing: "v4.0.41"),
+            _buildMenuItem(
+              Icons.star_border,
+              "Rate Our App",
+              trailing: "v4.0.41",
+            ),
 
             const SizedBox(height: 32),
 
@@ -1064,7 +1142,9 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
               "Privacy Policy",
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const PrivacyPolicyPage()),
+                MaterialPageRoute(
+                  builder: (context) => const PrivacyPolicyPage(),
+                ),
               ),
             ),
           ],
