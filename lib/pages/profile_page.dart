@@ -17,6 +17,7 @@ import 'package:azzura_rewards/pages/privacy_policy_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import '../providers/point_provider.dart';
+import '../providers/transaction_provider.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -537,6 +538,17 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
     );
 
     context.read<PointProvider>().addPoints(activity["points"]);
+
+    context.read<TransactionProvider>().addTransaction(
+      type: 'earn',
+      name: activity["title"],
+      description: activity["title"],
+      points: activity["points"],
+      category: "Activities",
+      image: "🎯",
+      tier: '',
+      status: 'completed',
+    );
     
     await saveBadges(badges);
   }

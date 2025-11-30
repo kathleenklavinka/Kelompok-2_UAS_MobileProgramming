@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants/colors.dart';
+import 'package:provider/provider.dart';
+import '../providers/transaction_provider.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
@@ -11,135 +13,6 @@ class HistoryPage extends StatefulWidget {
 class _HistoryPageState extends State<HistoryPage> {
   String selectedFilter = 'All';
 
-  final List<Map<String, dynamic>> transactions = [
-    {
-      'id': 'trx_001',
-      'type': 'reward',
-      'name': 'Margherita Pizza',
-      'description': 'Classic tomato & cheese',
-      'points': -2500,
-      'date': DateTime(2024, 11, 28, 14, 30),
-      'status': 'completed',
-      'category': 'Pizza',
-      'tier': 'Gold',
-      'image': '🍕',
-    },
-    {
-      'id': 'trx_002',
-      'type': 'merch',
-      'name': 'T-Shirt Premium',
-      'description': 'T-shirt katun premium dengan logo',
-      'points': -500,
-      'date': DateTime(2024, 11, 27, 10, 15),
-      'status': 'shipping',
-      'category': 'Apparel',
-      'image': '👕',
-    },
-    {
-      'id': 'trx_003',
-      'type': 'reward',
-      'name': 'Carbonara Pasta',
-      'description': 'Creamy & delicious',
-      'points': -1800,
-      'date': DateTime(2024, 11, 26, 18, 45),
-      'status': 'completed',
-      'category': 'Pasta',
-      'tier': 'Silver',
-      'image': '🍝',
-    },
-    {
-      'id': 'trx_004',
-      'type': 'earn',
-      'name': 'Purchase Points',
-      'description': 'Pembelian di outlet',
-      'points': 150,
-      'date': DateTime(2024, 11, 25, 12, 20),
-      'status': 'completed',
-      'category': 'Points',
-      'image': '⭐',
-    },
-    {
-      'id': 'trx_005',
-      'type': 'merch',
-      'name': 'Tumbler Stainless',
-      'description': 'Tumbler 500ml stainless steel',
-      'points': -450,
-      'date': DateTime(2024, 11, 24, 16, 10),
-      'status': 'completed',
-      'category': 'Drinkware',
-      'image': '☕',
-    },
-    {
-      'id': 'trx_006',
-      'type': 'reward',
-      'name': 'Garlic Bread',
-      'description': 'With butter & herbs',
-      'points': -800,
-      'date': DateTime(2024, 11, 23, 13, 30),
-      'status': 'completed',
-      'category': 'Side Dish',
-      'tier': 'Bronze',
-      'image': '🥖',
-    },
-    {
-      'id': 'trx_007',
-      'type': 'earn',
-      'name': 'Birthday Bonus',
-      'description': 'Special birthday reward',
-      'points': 500,
-      'date': DateTime(2024, 11, 22, 9, 0),
-      'status': 'completed',
-      'category': 'Bonus',
-      'image': '🎂',
-    },
-    {
-      'id': 'trx_008',
-      'type': 'merch',
-      'name': 'Tote Bag Canvas',
-      'description': 'Tote bag canvas berkualitas tinggi',
-      'points': -350,
-      'date': DateTime(2024, 11, 20, 11, 45),
-      'status': 'completed',
-      'category': 'Bags',
-      'image': '👜',
-    },
-    {
-      'id': 'trx_009',
-      'type': 'reward',
-      'name': 'Pepperoni Pizza',
-      'description': 'With extra cheese',
-      'points': -3000,
-      'date': DateTime(2024, 11, 19, 19, 15),
-      'status': 'completed',
-      'category': 'Pizza',
-      'tier': 'Gold',
-      'image': '🍕',
-    },
-    {
-      'id': 'trx_010',
-      'type': 'earn',
-      'name': 'Referral Bonus',
-      'description': 'Dari mengajak teman',
-      'points': 300,
-      'date': DateTime(2024, 11, 18, 15, 30),
-      'status': 'completed',
-      'category': 'Bonus',
-      'image': '👥',
-    },
-  ];
-
-  List<Map<String, dynamic>> get filteredTransactions {
-    if (selectedFilter == 'All') {
-      return transactions;
-    } else if (selectedFilter == 'Rewards') {
-      return transactions.where((t) => t['type'] == 'reward').toList();
-    } else if (selectedFilter == 'Merch') {
-      return transactions.where((t) => t['type'] == 'merch').toList();
-    } else {
-      return transactions.where((t) => t['type'] == 'earn').toList();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -149,81 +22,97 @@ class _HistoryPageState extends State<HistoryPage> {
         backgroundColor: AppColors.red,
         foregroundColor: AppColors.white,
         centerTitle: true,
-      ),
-      body: Column(
-        children: [
-          Container(
-            margin: const EdgeInsets.all(16),
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [AppColors.red, AppColors.redLight],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.black.withOpacity(0.15),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _summaryItem(
-                  'Total Transaksi',
-                  '${transactions.length}',
-                  Icons.receipt_long,
-                ),
-                Container(
-                  width: 1,
-                  height: 40,
-                  color: AppColors.white.withOpacity(0.3),
-                ),
-                _summaryItem(
-                  'Points Terpakai',
-                  '${_getTotalPointsSpent()}',
-                  Icons.star,
-                ),
-              ],
-            ),
-          ),
-
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            height: 45,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                _filterChip('All'),
-                const SizedBox(width: 8),
-                _filterChip('Rewards'),
-                const SizedBox(width: 8),
-                _filterChip('Merch'),
-                const SizedBox(width: 8),
-                _filterChip('Earned'),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          Expanded(
-            child: filteredTransactions.isEmpty
-                ? _emptyState()
-                : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: filteredTransactions.length,
-                    itemBuilder: (context, index) {
-                      final transaction = filteredTransactions[index];
-                      return _transactionCard(transaction);
-                    },
-                  ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              context.read<TransactionProvider>().refreshTransactions();
+            },
           ),
         ],
+      ),
+      body: Consumer<TransactionProvider>(
+        builder: (context, transactionProvider, child) {
+          final filteredTransactions = transactionProvider.getFilteredTransactions(selectedFilter);
+          final totalTransactions = transactionProvider.transactions.length;
+          final totalPointsSpent = transactionProvider.getTotalPointsSpent();
+
+          return Column(
+            children: [
+              Container(
+                margin: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppColors.red, AppColors.redLight],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.black.withOpacity(0.15),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _summaryItem(
+                      'Total Transaksi',
+                      '$totalTransactions',
+                      Icons.receipt_long,
+                    ),
+                    Container(
+                      width: 1,
+                      height: 40,
+                      color: AppColors.white.withOpacity(0.3),
+                    ),
+                    _summaryItem(
+                      'Points Terpakai',
+                      '$totalPointsSpent',
+                      Icons.star,
+                    ),
+                  ],
+                ),
+              ),
+
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                height: 45,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    _filterChip('All'),
+                    const SizedBox(width: 8),
+                    _filterChip('Rewards'),
+                    const SizedBox(width: 8),
+                    _filterChip('Merch'),
+                    const SizedBox(width: 8),
+                    _filterChip('Earned'),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              Expanded(
+                child: filteredTransactions.isEmpty
+                    ? _emptyState()
+                    : ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: filteredTransactions.length,
+                        itemBuilder: (context, index) {
+                          final transaction = filteredTransactions[index];
+                          return _transactionCard(transaction);
+                        },
+                      ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -498,12 +387,6 @@ class _HistoryPageState extends State<HistoryPage> {
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
 
-  int _getTotalPointsSpent() {
-    return transactions
-        .where((t) => t['points'] < 0)
-        .fold(0, (sum, t) => sum + (t['points'] as int).abs());
-  }
-
   void _showTransactionDetail(Map<String, dynamic> transaction) {
     showModalBottomSheet(
       context: context,
@@ -569,7 +452,7 @@ class _HistoryPageState extends State<HistoryPage> {
             _detailRow('Item', transaction['name']),
             _detailRow('Deskripsi', transaction['description']),
             _detailRow('Kategori', transaction['category']),
-            if (transaction.containsKey('tier'))
+            if (transaction['tier'] != null && transaction['tier'].toString().isNotEmpty)
               _detailRow('Tier', transaction['tier']),
             _detailRow('Points', '${transaction['points']} pts'),
             _detailRow('Status', transaction['status']),

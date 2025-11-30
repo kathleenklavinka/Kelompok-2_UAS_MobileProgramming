@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../constants/colors.dart';
 import 'package:provider/provider.dart';
 import '../providers/point_provider.dart';
+import '../providers/transaction_provider.dart';
 
 class MerchPage extends StatelessWidget {
   const MerchPage({super.key});
@@ -98,6 +99,8 @@ class MerchPage extends StatelessWidget {
                     Icons.checkroom,
                     AppColors.red,
                     'T-shirt katun premium dengan logo Notte Azzura',
+                    'Apparel',
+                    '👕',
                   ),
                   _merchCard(
                     context,
@@ -106,6 +109,8 @@ class MerchPage extends StatelessWidget {
                     Icons.shopping_bag,
                     AppColors.green,
                     'Tote bag canvas berkualitas tinggi',
+                    'Bags',
+                    '👜',
                   ),
                   _merchCard(
                     context,
@@ -114,6 +119,8 @@ class MerchPage extends StatelessWidget {
                     Icons.local_cafe,
                     AppColors.orange,
                     'Tumbler 500ml stainless steel',
+                    'Drinkware',
+                    '☕',
                   ),
                   _merchCard(
                     context,
@@ -122,6 +129,8 @@ class MerchPage extends StatelessWidget {
                     Icons.sports_baseball,
                     AppColors.redDark,
                     'Topi baseball dengan bordir logo',
+                    'Apparel',
+                    '🧢',
                   ),
                   _merchCard(
                     context,
@@ -130,6 +139,8 @@ class MerchPage extends StatelessWidget {
                     Icons.coffee,
                     AppColors.greenDark,
                     'Mug keramik eksklusif Notte Azzura',
+                    'Drinkware',
+                    '☕',
                   ),
                   _merchCard(
                     context,
@@ -138,6 +149,8 @@ class MerchPage extends StatelessWidget {
                     Icons.key,
                     AppColors.gold,
                     'Gantungan kunci metal premium',
+                    'Accessories',
+                    '🔑',
                   ),
                   _merchCard(
                     context,
@@ -146,6 +159,8 @@ class MerchPage extends StatelessWidget {
                     Icons.collections,
                     AppColors.info,
                     'Set 5 sticker waterproof',
+                    'Accessories',
+                    '✨',
                   ),
                   _merchCard(
                     context,
@@ -154,6 +169,8 @@ class MerchPage extends StatelessWidget {
                     Icons.menu_book,
                     AppColors.warning,
                     'Notebook hardcover 100 halaman',
+                    'Stationery',
+                    '📔',
                   ),
                 ],
               ),
@@ -173,10 +190,12 @@ class MerchPage extends StatelessWidget {
     IconData icon,
     Color color,
     String description,
+    String category,
+    String emoji,
   ) {
     return GestureDetector(
       onTap: () {
-        _showMerchDetail(context, name, points, icon, color, description);
+        _showMerchDetail(context, name, points, icon, color, description, category, emoji);
       },
       child: Container(
         decoration: BoxDecoration(
@@ -241,7 +260,7 @@ class MerchPage extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          "${points} pts",
+                          "$points pts",
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -267,6 +286,8 @@ class MerchPage extends StatelessWidget {
     IconData icon,
     Color color,
     String description,
+    String category,
+    String emoji,
   ) {
     showModalBottomSheet(
       context: context,
@@ -334,7 +355,7 @@ class MerchPage extends StatelessWidget {
                   const Icon(Icons.stars, color: AppColors.gold, size: 20),
                   const SizedBox(width: 6),
                   Text(
-                    "${points} pts",
+                    "$points pts",
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -352,7 +373,7 @@ class MerchPage extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context);
-                  _redeemWithProvider(context, name, points);
+                  _redeemWithProvider(context, name, points, description, category, emoji);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.red,
@@ -397,11 +418,27 @@ class MerchPage extends StatelessWidget {
     BuildContext context,
     String name,
     int neededPoints,
+    String description,
+    String category,
+    String emoji,
   ) {
     final pointProvider = context.read<PointProvider>();
+    final transactionProvider = context.read<TransactionProvider>();
+    
     bool success = pointProvider.redeemPoints(neededPoints);
 
     if (success) {
+      transactionProvider.addTransaction(
+        type: 'merch',
+        name: name,
+        description: description,
+        points: -neededPoints,
+        category: category,
+        image: emoji,
+        tier: '',
+        status: 'shipping',
+      );
+
       showDialog(
         context: context,
         builder: (context) => AlertDialog(

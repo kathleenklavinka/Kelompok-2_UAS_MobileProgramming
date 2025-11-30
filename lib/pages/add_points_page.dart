@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:azzura_rewards/constants/colors.dart';
+import 'package:provider/provider.dart';
+import '../providers/point_provider.dart';
+import '../providers/transaction_provider.dart';
 
 class AddPointsPage extends StatefulWidget {
   const AddPointsPage({Key? key}) : super(key: key);
@@ -825,6 +828,17 @@ class _AddPointsPageState extends State<AddPointsPage>
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
+        context.read<TransactionProvider>().addTransaction(
+          type: 'earn',
+          name: "Purchase Point",
+          description: 'Added points from transaction',
+          points: points,
+          category: 'Points',
+          image: "⭐",
+          tier: '',
+          status: 'completed',
+        );
+        context.read<PointProvider>().addPoints(points);
         return Dialog(
           backgroundColor: Colors.transparent,
           insetPadding: const EdgeInsets.all(24),

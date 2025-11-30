@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math';
-import 'dart:convert';
 import 'inbox_page.dart';
 import 'package:provider/provider.dart';
 import '../providers/point_provider.dart';
+import '../providers/transaction_provider.dart';
 
 // MULTISTATE ENUM
 enum RewardPageState { loading, loaded, error, redeeming }
@@ -168,13 +168,6 @@ class _RewardsPageState extends State<RewardsPage>
         .map((r) => r['id'] as String)
         .toList();
     await prefs.setStringList('redeemedRewards', redeemedIds);
-  }
-
-  // RESET DATA (untuk testing)
-  Future<void> _resetData() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
-    _loadRewards();
   }
 
   @override
@@ -531,7 +524,7 @@ class _RewardsPageState extends State<RewardsPage>
     );
   }
 
-Widget _buildRewardCard(Map<String, dynamic> reward, int index) {
+  Widget _buildRewardCard(Map<String, dynamic> reward, int index) {
     bool canRedeem = userNottiPoints >= reward['points'] && !reward['redeemed'];
     bool isLocked = !canRedeem && !reward['redeemed'];
     bool isRedeemed = reward['redeemed'];
@@ -846,6 +839,7 @@ Widget _buildRewardCard(Map<String, dynamic> reward, int index) {
 
   void _processRedeem(Map<String, dynamic> reward) async {
     final pointProvider = context.read<PointProvider>();
+    final transactionProvider = context.read<TransactionProvider>();
     final cost = reward['points'] as int;
 
     setState(() => _currentState = RewardPageState.redeeming);
@@ -871,6 +865,18 @@ Widget _buildRewardCard(Map<String, dynamic> reward, int index) {
 
     await _saveUserData();
     await _saveRedeemedRewards();
+
+    // Add transaction to history
+    await transactionProvider.addTransaction(
+      type: 'reward',
+      name: reward['name'],
+      description: reward['description'],
+      points: -cost,
+      category: reward['category'],
+      image: reward['image'],
+      tier: reward['tier'] ?? '',
+      status: 'completed',
+    );
 
     await InboxPage.createNotification(
       type: 'reward',
