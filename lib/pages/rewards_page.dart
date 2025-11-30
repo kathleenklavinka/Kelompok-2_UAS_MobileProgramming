@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math';
 import 'dart:convert';
-import 'transaction_history_page.dart';
 import 'inbox_page.dart';
 
 // MULTISTATE ENUM
@@ -323,17 +322,6 @@ class _RewardsPageState extends State<RewardsPage>
             onPressed: () => Navigator.pop(context),
           ),
           actions: [
-            IconButton(
-              icon: Icon(Icons.history, color: _cream),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => TransactionHistoryPage(),
-                  ),
-                );
-              },
-            ),
             IconButton(
               icon: Icon(Icons.help_outline, color: _cream),
               onPressed: () => _showInfoDialog(),
