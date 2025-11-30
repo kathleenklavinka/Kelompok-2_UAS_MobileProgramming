@@ -29,7 +29,7 @@ class ProfileService {
     final prefs = await SharedPreferences.getInstance();
 
     return {
-      "name": prefs.getString("name") ?? "User Baru",
+      "name": prefs.getString("name") ?? "New User",
       "email": prefs.getString("email") ?? "email@example.com",
       "phone": prefs.getString("phone") ?? "-",
       "avatar": prefs.getString("avatar") ?? "",

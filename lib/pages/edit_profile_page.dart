@@ -96,32 +96,32 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   Future<void> _saveProfile() async {
     if (nameC.text.isEmpty) {
-      _showError('Nama tidak boleh kosong');
+      _showError('Name cannot be empty');
       return;
     }
 
     if (emailC.text.isEmpty || !emailC.text.contains('@')) {
-      _showError('Email tidak valid');
+      _showError('Invalid email');
       return;
     }
 
     if (phoneC.text.isEmpty) {
-      _showError('Nomor telepon tidak boleh kosong');
+      _showError('Phone number cannot be empty');
       return;
     }
 
     if (usernameC.text.isEmpty) {
-      _showError('Username tidak boleh kosong');
+      _showError('Username cannot be empty');
       return;
     }
 
     if (passwordC.text.isEmpty) {
-      _showError('Password tidak boleh kosong');
+      _showError('Password cannot be empty');
       return;
     }
 
     if (passwordC.text.length < 6) {
-      _showError('Password minimal 6 karakter');
+      _showError('Password must be at least 6 characters');
       return;
     }
 
