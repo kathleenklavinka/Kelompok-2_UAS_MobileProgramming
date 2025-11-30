@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/point_provider.dart';
 import '../constants/colors.dart';
 import 'rewards_page.dart';
 import 'profile_page.dart';
 import 'merch_page.dart';
-import 'notifications_page.dart';
 import 'promos_page.dart';
 import 'deals_page.dart';
+import 'add_points_page.dart';
+import 'tier_page.dart';
+import 'inbox_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -47,6 +51,7 @@ class _HomeContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final point = context.watch<PointProvider>().points;
     return Scaffold(
       backgroundColor: AppColors.cream,
       appBar: AppBar(
@@ -67,7 +72,7 @@ class _HomeContent extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const NotificationsPage(),
+                      builder: (context) => const InboxPage(),
                     ),
                   );
                 },
@@ -121,7 +126,7 @@ class _HomeContent extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(16, 20, 16, 30),
                 child: Column(
                   children: [
-                    _profileCard(context),
+                    _profileCard(context, point),
                     const SizedBox(height: 20),
                     _quickActionButtons(context),
                   ],
@@ -376,76 +381,109 @@ class _HomeContent extends StatelessWidget {
     );
   }
 
-  Widget _profileCard(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withOpacity(0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          )
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [AppColors.gold, AppColors.warning],
-              ),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: const Icon(
-              Icons.stars,
-              color: AppColors.white,
-              size: 32,
-            ),
+  Widget _profileCard(BuildContext context, int points) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const TierPage(),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
-                  "Hi, Morris 👋",
-                  style: TextStyle(
-                    color: AppColors.black,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.black.withOpacity(0.1),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            )
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppColors.gold, AppColors.warning],
+                ),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Icon(
+                Icons.stars,
+                color: AppColors.white,
+                size: 32,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Hi, Morris 👋",
+                    style: TextStyle(
+                      color: AppColors.black,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 6),
+                  Text(
+                    "$points points",
+                    style: TextStyle(
+                      color: AppColors.gray,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: AppColors.gold.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Text(
+                    "Mattina",
+                    style: TextStyle(
+                      color: AppColors.redDark,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-                SizedBox(height: 6),
-                Text(
-                  "1,250 points",
-                  style: TextStyle(
-                    color: AppColors.gray,
-                    fontSize: 16,
-                  ),
+                const SizedBox(height: 6),
+                Row(
+                  children: const [
+                    Text(
+                      "View Details",
+                      style: TextStyle(
+                        color: AppColors.gray,
+                        fontSize: 11,
+                      ),
+                    ),
+                    SizedBox(width: 4),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      color: AppColors.gray,
+                      size: 12,
+                    ),
+                  ],
                 ),
               ],
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: AppColors.gold.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Text(
-              "Gold",
-              style: TextStyle(
-                color: AppColors.redDark,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -453,32 +491,21 @@ class _HomeContent extends StatelessWidget {
   Widget _quickActionButtons(BuildContext context) {
     return Row(
       children: [
-        // Expanded(
-        //   child: _actionButton(
-        //     context,
-        //     icon: Icons.add_circle,
-        //     label: "Add Points",
-        //     color: AppColors.white,
-        //     textColor: AppColors.red,
-        //     onTap: () {
-        //       Navigator.push(
-        //         context,
-        //         MaterialPageRoute(
-        //           builder: (context) => const AddPointsPage(),
-        //         ),
-        //       );
-        //     },
-        //   ),
-        // ),
-        // const SizedBox(width: 12),
         Expanded(
           child: _actionButton(
             context,
-            icon: Icons.redeem,
-            label: "Redeem",
-            color: AppColors.gold,
-            textColor: AppColors.white,
-            onTap: () {},
+            icon: Icons.add_circle,
+            label: "Add Points",
+            color: AppColors.white,
+            textColor: AppColors.red,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AddPointsPage(),
+                ),
+              );
+            },
           ),
         ),
       ],

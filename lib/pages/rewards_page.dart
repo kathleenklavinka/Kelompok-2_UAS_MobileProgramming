@@ -4,6 +4,8 @@ import 'dart:math';
 import 'dart:convert';
 import 'transaction_history_page.dart';
 import 'inbox_page.dart';
+import 'package:provider/provider.dart';
+import '../providers/point_provider.dart';
 
 // MULTISTATE ENUM
 enum RewardPageState { loading, loaded, error, redeeming }
@@ -21,7 +23,7 @@ class _RewardsPageState extends State<RewardsPage>
   RewardPageState _currentState = RewardPageState.loading;
 
   // User data - akan dimuat dari SharedPreferences
-  int userNottiPoints = 2450;
+  int userNottiPoints = 0;
   String userTier = "Ruby";
   int userLevel = 15;
 
@@ -112,6 +114,12 @@ class _RewardsPageState extends State<RewardsPage>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final pointProvider = context.read<PointProvider>();
+      setState(() {
+        userNottiPoints = pointProvider.points;
+      });
+    });
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 1500),
       vsync: this,
@@ -127,7 +135,6 @@ class _RewardsPageState extends State<RewardsPage>
       final prefs = await SharedPreferences.getInstance();
 
       // Load user points & level
-      userNottiPoints = prefs.getInt('userNottiPoints') ?? 2450;
       userLevel = prefs.getInt('userLevel') ?? 15;
       userTier = prefs.getString('userTier') ?? 'Ruby';
 
@@ -173,7 +180,7 @@ class _RewardsPageState extends State<RewardsPage>
 
   Future<void> _saveTransaction(Map<String, dynamic> reward) async {
     final prefs = await SharedPreferences.getInstance();
-    
+
     final transaction = {
       'id': 'trans_${DateTime.now().millisecondsSinceEpoch}',
       'type': 'redeemed',
@@ -181,7 +188,8 @@ class _RewardsPageState extends State<RewardsPage>
       'title': 'Reward Redeemed',
       'description': reward['name'],
       'date': DateTime.now().toIso8601String(),
-      'qrCode': 'AZZURA-${reward['id']}-${DateTime.now().millisecondsSinceEpoch}',
+      'qrCode':
+          'AZZURA-${reward['id']}-${DateTime.now().millisecondsSinceEpoch}',
       'emoji': reward['image'],
     };
 
@@ -874,28 +882,41 @@ class _RewardsPageState extends State<RewardsPage>
   }
 
   void _processRedeem(Map<String, dynamic> reward) async {
+    final pointProvider = context.read<PointProvider>();
+    final cost = reward['points'] as int;
+
     setState(() => _currentState = RewardPageState.redeeming);
 
-    // Simulate processing
     await Future.delayed(Duration(seconds: 1));
+
+    final success = pointProvider.redeemPoints(cost);
+
+    if (!success) {
+      setState(() => _currentState = RewardPageState.loaded);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Point kamu tidak cukup untuk redeem ini.")),
+      );
+      return;
+    }
 
     setState(() {
       reward['redeemed'] = true;
-      userNottiPoints -= reward['points'] as int;
+      userNottiPoints = pointProvider.points;
       _currentState = RewardPageState.loaded;
     });
 
-    // SAVE KE SHAREDPREFERENCES
     await _saveUserData();
     await _saveRedeemedRewards();
     await _saveTransaction(reward);
 
     await InboxPage.createNotification(
-    type: 'reward',
-    title: '🎁 Reward Redeemed!',
-    message: 'You successfully redeemed ${reward['name']} for ${reward['points']} points!',
-    emoji: reward['image'] ?? '🎁',
-  );
+      type: 'reward',
+      title: '🎁 Reward Redeemed!',
+      message:
+          'You successfully redeemed ${reward['name']} for ${reward['points']} points!',
+      emoji: reward['image'] ?? '🎁',
+    );
 
     _showQRCodeDialog(reward);
   }

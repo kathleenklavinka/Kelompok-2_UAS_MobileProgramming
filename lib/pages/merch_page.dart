@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants/colors.dart';
+import 'package:provider/provider.dart';
+import '../providers/point_provider.dart';
 
 class MerchPage extends StatelessWidget {
   const MerchPage({super.key});
@@ -92,7 +94,7 @@ class MerchPage extends StatelessWidget {
                   _merchCard(
                     context,
                     'T-Shirt Premium',
-                    '500 pts',
+                    500,
                     Icons.checkroom,
                     AppColors.red,
                     'T-shirt katun premium dengan logo Notte Azzura',
@@ -100,7 +102,7 @@ class MerchPage extends StatelessWidget {
                   _merchCard(
                     context,
                     'Tote Bag Canvas',
-                    '350 pts',
+                    350,
                     Icons.shopping_bag,
                     AppColors.green,
                     'Tote bag canvas berkualitas tinggi',
@@ -108,7 +110,7 @@ class MerchPage extends StatelessWidget {
                   _merchCard(
                     context,
                     'Tumbler Stainless',
-                    '450 pts',
+                    450,
                     Icons.local_cafe,
                     AppColors.orange,
                     'Tumbler 500ml stainless steel',
@@ -116,7 +118,7 @@ class MerchPage extends StatelessWidget {
                   _merchCard(
                     context,
                     'Baseball Cap',
-                    '400 pts',
+                    400,
                     Icons.sports_baseball,
                     AppColors.redDark,
                     'Topi baseball dengan bordir logo',
@@ -124,7 +126,7 @@ class MerchPage extends StatelessWidget {
                   _merchCard(
                     context,
                     'Mug Keramik',
-                    '300 pts',
+                    300,
                     Icons.coffee,
                     AppColors.greenDark,
                     'Mug keramik eksklusif Notte Azzura',
@@ -132,7 +134,7 @@ class MerchPage extends StatelessWidget {
                   _merchCard(
                     context,
                     'Keychain Premium',
-                    '150 pts',
+                    150,
                     Icons.key,
                     AppColors.gold,
                     'Gantungan kunci metal premium',
@@ -140,7 +142,7 @@ class MerchPage extends StatelessWidget {
                   _merchCard(
                     context,
                     'Sticker Pack',
-                    '100 pts',
+                    100,
                     Icons.collections,
                     AppColors.info,
                     'Set 5 sticker waterproof',
@@ -148,7 +150,7 @@ class MerchPage extends StatelessWidget {
                   _merchCard(
                     context,
                     'Notebook A5',
-                    '250 pts',
+                    250,
                     Icons.menu_book,
                     AppColors.warning,
                     'Notebook hardcover 100 halaman',
@@ -167,7 +169,7 @@ class MerchPage extends StatelessWidget {
   Widget _merchCard(
     BuildContext context,
     String name,
-    String points,
+    int points,
     IconData icon,
     Color color,
     String description,
@@ -239,7 +241,7 @@ class MerchPage extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          points,
+                          "${points} pts",
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -261,7 +263,7 @@ class MerchPage extends StatelessWidget {
   void _showMerchDetail(
     BuildContext context,
     String name,
-    String points,
+    int points,
     IconData icon,
     Color color,
     String description,
@@ -332,7 +334,7 @@ class MerchPage extends StatelessWidget {
                   const Icon(Icons.stars, color: AppColors.gold, size: 20),
                   const SizedBox(width: 6),
                   Text(
-                    points,
+                    "${points} pts",
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -350,7 +352,7 @@ class MerchPage extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context);
-                  _showConfirmationDialog(context, name, points);
+                  _redeemWithProvider(context, name, points);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.red,
@@ -391,39 +393,78 @@ class MerchPage extends StatelessWidget {
     );
   }
 
-  void _showConfirmationDialog(
+  void _redeemWithProvider(
     BuildContext context,
     String name,
-    String points,
+    int neededPoints,
   ) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
-          children: [
-            Icon(Icons.check_circle, color: AppColors.success, size: 28),
-            SizedBox(width: 8),
-            Text('Berhasil!'),
-          ],
-        ),
-        content: Text(
-          'Kamu telah menukar $points untuk $name. Merchandise akan dikirim ke alamatmu dalam 3-5 hari kerja.',
-          style: const TextStyle(fontSize: 14),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              'OK',
-              style: TextStyle(
-                color: AppColors.red,
-                fontWeight: FontWeight.bold,
+    final pointProvider = context.read<PointProvider>();
+    bool success = pointProvider.redeemPoints(neededPoints);
+
+    if (success) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Row(
+            children: [
+              Icon(Icons.check_circle, color: AppColors.success, size: 28),
+              SizedBox(width: 8),
+              Text('Berhasil!'),
+            ],
+          ),
+          content: Text(
+            'Kamu telah menukar $neededPoints poin untuk $name.\nMerchandise akan dikirim ke alamatmu dalam 3-5 hari kerja.',
+            style: const TextStyle(fontSize: 14),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                'OK',
+                style: TextStyle(
+                  color: AppColors.red,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
+          ],
+        ),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
-        ],
-      ),
-    );
+          title: const Row(
+            children: [
+              Icon(Icons.error, color: AppColors.red, size: 28),
+              SizedBox(width: 8),
+              Text('Gagal!'),
+            ],
+          ),
+          content: Text(
+            'Poin kamu tidak cukup untuk menukar $name.',
+            style: const TextStyle(fontSize: 14),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                'Mengerti',
+                style: TextStyle(
+                  color: AppColors.red,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
   }
 }

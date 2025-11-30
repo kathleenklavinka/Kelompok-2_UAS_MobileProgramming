@@ -15,6 +15,8 @@ import 'package:azzura_rewards/pages/contact_us_page.dart';
 import 'package:azzura_rewards/pages/terms_of_use.dart';
 import 'package:azzura_rewards/pages/privacy_policy_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import '../providers/point_provider.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -534,6 +536,8 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
       ),
     );
 
+    context.read<PointProvider>().addPoints(activity["points"]);
+    
     await saveBadges(badges);
   }
 
