@@ -10,6 +10,7 @@ import 'deals_page.dart';
 import 'add_points_page.dart';
 import 'tier_page.dart';
 import 'inbox_page.dart';
+import 'promo_detail_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -48,6 +49,56 @@ class _HomePageState extends State<HomePage> {
 
 class _HomeContent extends StatelessWidget {
   const _HomeContent();
+
+  static final List<Map<String, dynamic>> promos = [
+    {
+      "title": "50% Cashback with GoPay",
+      "merchant": "GoPay",
+      "period": "Valid until 30 Nov",
+      "description": "Get 50% cashback up to Rp 20,000 for payments using GoPay or GoPay Later. Valid 1x/user/week.",
+      "colors": [const Color(0xFF00AA13), const Color(0xFF00C318)],
+      "image": "assets/gopay.png",
+      "terms": ["Min. transaction Rp 40,000", "Valid for Dine-in only"],
+      "steps": [
+        "Open Gojek app and select 'Pay'.",
+        "Scan the QRIS available at the cashier.",
+        "Ensure the payment amount is correct.",
+        "Click 'Apply Promo' and select the cashback voucher.",
+        "Complete the payment."
+      ]
+    },
+    {
+      "title": "Rp 15k Off with OVO",
+      "merchant": "OVO",
+      "period": "1-15 Dec 2024",
+      "description": "Direct discount of Rp 15,000 with a minimum transaction of Rp 100,000 using OVO Cash/Points.",
+      "colors": [const Color(0xFF4C3494), const Color(0xFF6946C6)],
+      "image": "assets/ovo.png",
+      "terms": ["Min. transaction Rp 100,000", "Multiple transactions not allowed"],
+      "steps": [
+        "Inform the cashier you want to pay with OVO.",
+        "Open OVO app and scan the QR Code.",
+        "Enter transaction amount (min. Rp 100,000).",
+        "Discount will be automatically applied.",
+        "Confirm payment."
+      ]
+    },
+    {
+      "title": "Pay 1 Get 2 with Mandiri",
+      "merchant": "Bank Mandiri",
+      "period": "Weekend Only",
+      "description": "Buy any 1 Main Course menu, get 1 selected Pasta menu for free with Mandiri Credit Card.",
+      "colors": [const Color(0xFF003D79), const Color(0xFF005CAA)],
+      "image": "assets/mandiri.png",
+      "terms": ["Saturday & Sunday only", "Signature & World Cards"],
+      "steps": [
+        "Order 1 Main Course and 1 Pasta of your choice.",
+        "Use Mandiri Credit Card for payment.",
+        "The cashier will deduct the price of the lower-priced item.",
+        "Keep the receipt as proof of transaction."
+      ]
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -258,17 +309,15 @@ class _HomeContent extends StatelessWidget {
                     children: [
                       _featureCard(
                         context,
-                        icon: Icons.local_offer,
-                        title: "Special\nPromos",
-                        gradient: const LinearGradient(
+                        icon: Icons.add_circle,
+                        title: "Add\nPoints",
+                        gradient: LinearGradient(
                           colors: [AppColors.orange, AppColors.redLight],
                         ),
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(
-                              builder: (context) => const PromosPage(),
-                            ),
+                            MaterialPageRoute(builder: (context) => const AddPointsPage()),
                           );
                         },
                       ),
@@ -351,27 +400,10 @@ class _HomeContent extends StatelessWidget {
 
                   const SizedBox(height: 12),
 
-                  _promoCard(
-                    "Midnight Pizza Deal",
-                    "Buy 1 Get 1 free pizza",
-                    "Valid until tonight",
-                    Icons.nightlight_round,
-                    AppColors.greenDark,
-                  ),
-                  _promoCard(
-                    "Birthday Reward",
-                    "Free slice of your choice",
-                    "Valid for 7 days",
-                    Icons.cake,
-                    AppColors.redLight,
-                  ),
-                  _promoCard(
-                    "Voucher Spesial",
-                    "Diskon 25% all menu",
-                    "Limited time offer",
-                    Icons.discount,
-                    AppColors.orange,
-                  ),
+                  ...promos.map((promo) => _promoCard(
+                    context,
+                    promo,
+                  )),
                 ],
               ),
             ),
@@ -489,27 +521,7 @@ class _HomeContent extends StatelessWidget {
   }
 
   Widget _quickActionButtons(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: _actionButton(
-            context,
-            icon: Icons.add_circle,
-            label: "Add Points",
-            color: AppColors.white,
-            textColor: AppColors.red,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const AddPointsPage(),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
-    );
+    return const SizedBox.shrink();
   }
 
   Widget _actionButton(
@@ -606,79 +618,128 @@ class _HomeContent extends StatelessWidget {
   }
 
   Widget _promoCard(
-    String title,
-    String subtitle,
-    String validity,
-    IconData icon,
-    Color color,
+    BuildContext context,
+    Map<String, dynamic> promo,
   ) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withOpacity(0.08),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          )
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PromoDetailPage(promo: promo),
+          ),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        height: 110,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: promo['colors'],
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: (promo['colors'][0] as Color).withOpacity(0.3),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            )
+          ],
+        ),
+        child: Stack(
           children: [
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(14),
+            Positioned(
+              right: -20,
+              top: -20,
+              child: CircleAvatar(
+                radius: 50,
+                backgroundColor: Colors.white.withOpacity(0.1),
               ),
-              child: Icon(icon, color: color, size: 32),
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            Positioned(
+              left: -15,
+              bottom: -25,
+              child: CircleAvatar(
+                radius: 40,
+                backgroundColor: Colors.white.withOpacity(0.08),
+              ),
+            ),
+            
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
                 children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.black,
-                      fontSize: 16,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            promo['merchant'].toString().toUpperCase(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          promo['title'],
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            height: 1.2,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.access_time_filled,
+                              color: Colors.white70,
+                              size: 12,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              promo['period'],
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(
-                      color: AppColors.grayDark,
-                      fontSize: 13,
+                  const SizedBox(width: 12),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      shape: BoxShape.circle,
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    validity,
-                    style: TextStyle(
-                      color: AppColors.gray,
-                      fontSize: 11,
+                    child: const Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.white,
+                      size: 16,
                     ),
                   ),
                 ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.arrow_forward_ios,
-                color: color,
-                size: 16,
               ),
             ),
           ],
