@@ -72,7 +72,7 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      result['message'],
+                      'Account created successfully. Please log in.',
                       style: const TextStyle(fontSize: 13),
                     ),
                   ],
@@ -118,7 +118,7 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      result['message'],
+                      'Email is already registered. Please use a different email.',
                       style: const TextStyle(fontSize: 13),
                     ),
                   ],

@@ -54,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text(
-                      'Login Berhasil!',
+                      'Login Success!',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -62,7 +62,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Selamat datang kembali, ${userProvider.fullName}',
+                      'Welcome back, ${userProvider.fullName}',
                       style: const TextStyle(fontSize: 13),
                     ),
                   ],
@@ -101,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text(
-                      'Login Gagal',
+                      'Login Failed',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -109,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      result['message'],
+                      'Email or password is incorrect',
                       style: const TextStyle(fontSize: 13),
                     ),
                   ],
