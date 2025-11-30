@@ -81,7 +81,7 @@ class _PromosPageState extends State<PromosPage> {
       backgroundColor: const Color(0xFFF5F5F5), 
       appBar: AppBar(
         title: const Text(
-          "Partner Promo", 
+          "Promo", 
           style: TextStyle(fontWeight: FontWeight.bold)
         ),
         backgroundColor: AppColors.redDark,
@@ -176,7 +176,6 @@ class _PromosPageState extends State<PromosPage> {
                         ),
                         const Spacer(),
                         
-                        // Judul
                         Text(
                           promo['title'],
                           style: const TextStyle(
