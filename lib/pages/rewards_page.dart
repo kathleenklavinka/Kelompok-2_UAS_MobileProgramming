@@ -380,7 +380,7 @@ class _RewardsPageState extends State<RewardsPage>
           sliver: SliverGrid(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              childAspectRatio: 0.75,
+              childAspectRatio: 0.65,
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
             ),
@@ -587,7 +587,7 @@ Widget _buildRewardCard(Map<String, dynamic> reward, int index) {
                 children: [
                   Expanded(
                     child: Padding(
-                      padding: EdgeInsets.all(14),
+                      padding: EdgeInsets.all(12),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -598,7 +598,7 @@ Widget _buildRewardCard(Map<String, dynamic> reward, int index) {
                               child: Icon(
                                 Icons.lock,
                                 color: Colors.grey,
-                                size: 20,
+                                size: 18,
                               ),
                             )
                           else if (isRedeemed)
@@ -607,49 +607,49 @@ Widget _buildRewardCard(Map<String, dynamic> reward, int index) {
                               child: Icon(
                                 Icons.check_circle,
                                 color: _green,
-                                size: 20,
+                                size: 18,
                               ),
                             ),
 
-                          SizedBox(height: 6),
+                          SizedBox(height: 4),
 
                           // Emoji
                           Center(
                             child: Text(
                               reward['image'],
-                              style: TextStyle(fontSize: 50),
-                            ),
-                          ),
-
-                          SizedBox(height: 10),
-
-                          // Category tag
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _primaryRed.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              reward['category'],
-                              style: TextStyle(
-                                color: _primaryRed,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              style: TextStyle(fontSize: 46),
                             ),
                           ),
 
                           SizedBox(height: 8),
 
+                          // Category tag
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 7,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              color: _primaryRed.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(7),
+                            ),
+                            child: Text(
+                              reward['category'],
+                              style: TextStyle(
+                                color: _primaryRed,
+                                fontSize: 9,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+
+                          SizedBox(height: 7),
+
                           // Name
                           Text(
                             reward['name'],
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: 13,
                               fontWeight: FontWeight.bold,
                               color: Colors.black87,
                             ),
@@ -657,13 +657,13 @@ Widget _buildRewardCard(Map<String, dynamic> reward, int index) {
                             overflow: TextOverflow.ellipsis,
                           ),
 
-                          SizedBox(height: 4),
+                          SizedBox(height: 3),
 
                           // Description
                           Text(
                             reward['description'],
                             style: TextStyle(
-                              fontSize: 11,
+                              fontSize: 10,
                               color: Colors.grey[600],
                             ),
                             maxLines: 2,
@@ -675,12 +675,12 @@ Widget _buildRewardCard(Map<String, dynamic> reward, int index) {
                           // Points
                           Row(
                             children: [
-                              Icon(Icons.stars, size: 16, color: _gold),
+                              Icon(Icons.stars, size: 15, color: _gold),
                               SizedBox(width: 4),
                               Text(
                                 '${reward['points']}',
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 13,
                                   fontWeight: FontWeight.bold,
                                   color: _primaryRed,
                                 ),
@@ -695,7 +695,7 @@ Widget _buildRewardCard(Map<String, dynamic> reward, int index) {
                   // Redeem button
                   if (canRedeem)
                     Container(
-                      padding: EdgeInsets.symmetric(vertical: 12),
+                      padding: EdgeInsets.symmetric(vertical: 11),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [_primaryRed, _lightRed],
@@ -711,7 +711,7 @@ Widget _buildRewardCard(Map<String, dynamic> reward, int index) {
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            fontSize: 13,
+                            fontSize: 12,
                             letterSpacing: 0.5,
                           ),
                         ),
