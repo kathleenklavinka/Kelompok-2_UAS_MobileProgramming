@@ -1,17 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:azzura_rewards/pages/signup_page.dart'; // Sesuaikan import ini
-
-class AppColors {
-  // Brand Palette
-  static const Color red = Color(0xFF821F06);
-  static const Color redLight = Color(0xFFA43B22);
-  static const Color redDark = Color(0xFF601504);
-  static const Color cream = Color(0xFFF5ECDD);
-  static const Color white = Color(0xFFFFFFFF);
-  static const Color gold = Color(0xFFC4A46A);
-  static const Color gray = Color(0xFF8A837A);
-  static const Color textDark = Color(0xFF2D2D2D);
-}
+import 'package:azzura_rewards/constants/colors.dart';
+import 'package:azzura_rewards/pages/signup_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -28,7 +17,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Mendapatkan tinggi layar
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -38,7 +26,6 @@ class _LoginPageState extends State<LoginPage> {
           height: size.height,
           child: Stack(
             children: [
-              // 1. BACKGROUND HEADER (Gradient Red)
               Container(
                 height: size.height * 0.45,
                 decoration: const BoxDecoration(
@@ -53,8 +40,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-
-              // 2. LOGO & WELCOME TEXT
               Positioned(
                 top: size.height * 0.1,
                 left: 0,
@@ -90,16 +75,14 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(
                         color: AppColors.white,
                         fontSize: 28,
-                        fontWeight: FontWeight.w300, // Light font looks classy
+                        fontWeight: FontWeight.w300,
                         letterSpacing: 1.0,
-                        fontFamily: 'Serif', // Menggunakan font Serif bawaan
+                        fontFamily: 'Serif',
                       ),
                     ),
                   ],
                 ),
               ),
-
-              // 3. FLOATING FORM CARD
               Positioned(
                 top: size.height * 0.35,
                 left: 24,
@@ -129,18 +112,16 @@ class _LoginPageState extends State<LoginPage> {
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.textDark,
+                                color: AppColors.foreground,
                               ),
                             ),
                             const SizedBox(height: 25),
-                            
                             _buildLuxuryTextField(
                               controller: _emailController,
                               hint: "Email Address",
                               icon: Icons.email_outlined,
                             ),
                             const SizedBox(height: 20),
-                            
                             _buildLuxuryTextField(
                               controller: _passwordController,
                               hint: "Password",
@@ -149,7 +130,6 @@ class _LoginPageState extends State<LoginPage> {
                               isObscure: _isObscure,
                               onToggle: () => setState(() => _isObscure = !_isObscure),
                             ),
-                            
                             const SizedBox(height: 15),
                             Align(
                               alignment: Alignment.centerRight,
@@ -161,10 +141,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ),
                             ),
-                            
                             const SizedBox(height: 25),
-                            
-                            // SIGN IN BUTTON
                             Container(
                               height: 55,
                               decoration: BoxDecoration(
@@ -181,9 +158,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ],
                               ),
                               child: ElevatedButton(
-                                onPressed: () {
-                                  // Action Login
-                                },
+                                onPressed: () {},
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.transparent,
                                   shadowColor: Colors.transparent,
@@ -206,10 +181,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
-                    
                     const SizedBox(height: 40),
-                    
-                    // BOTTOM SECTION
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -251,13 +223,13 @@ class _LoginPageState extends State<LoginPage> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.cream.withOpacity(0.4), // Very subtle background
+        color: AppColors.cream.withOpacity(0.4),
         borderRadius: BorderRadius.circular(15),
       ),
       child: TextFormField(
         controller: controller,
         obscureText: isPassword ? isObscure : false,
-        style: const TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w600),
+        style: const TextStyle(color: AppColors.foreground, fontWeight: FontWeight.w600),
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: const TextStyle(color: AppColors.gray, fontSize: 14),
@@ -272,7 +244,7 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: onToggle,
                 )
               : null,
-          border: InputBorder.none, // Menghilangkan border garis
+          border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         ),
       ),
