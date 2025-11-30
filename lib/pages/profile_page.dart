@@ -779,7 +779,7 @@ class _ProfilePageState extends State<ProfilePage>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "${greeting()}, ${profileData['name'] ?? '--'}!",
+                              "${greeting()}, ${userProvider.fullName}!",
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
