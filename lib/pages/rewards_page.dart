@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math';
 import 'dart:convert';
-import 'transaction_history_page.dart';
 import 'inbox_page.dart';
 import 'package:provider/provider.dart';
 import '../providers/point_provider.dart';
@@ -178,26 +177,6 @@ class _RewardsPageState extends State<RewardsPage>
     _loadRewards();
   }
 
-  Future<void> _saveTransaction(Map<String, dynamic> reward) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    final transaction = {
-      'id': 'trans_${DateTime.now().millisecondsSinceEpoch}',
-      'type': 'redeemed',
-      'points': reward['points'],
-      'title': 'Reward Redeemed',
-      'description': reward['name'],
-      'date': DateTime.now().toIso8601String(),
-      'qrCode':
-          'AZZURA-${reward['id']}-${DateTime.now().millisecondsSinceEpoch}',
-      'emoji': reward['image'],
-    };
-
-    final transactionsJson = prefs.getStringList('transactions') ?? [];
-    transactionsJson.insert(0, jsonEncode(transaction));
-    await prefs.setStringList('transactions', transactionsJson);
-  }
-
   @override
   void dispose() {
     _animationController.dispose();
@@ -331,17 +310,6 @@ class _RewardsPageState extends State<RewardsPage>
             onPressed: () => Navigator.pop(context),
           ),
           actions: [
-            IconButton(
-              icon: Icon(Icons.history, color: _cream),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => TransactionHistoryPage(),
-                  ),
-                );
-              },
-            ),
             IconButton(
               icon: Icon(Icons.help_outline, color: _cream),
               onPressed: () => _showInfoDialog(),
@@ -567,7 +535,7 @@ class _RewardsPageState extends State<RewardsPage>
     );
   }
 
-  Widget _buildRewardCard(Map<String, dynamic> reward, int index) {
+Widget _buildRewardCard(Map<String, dynamic> reward, int index) {
     bool canRedeem = userNottiPoints >= reward['points'] && !reward['redeemed'];
     bool isLocked = !canRedeem && !reward['redeemed'];
     bool isRedeemed = reward['redeemed'];
@@ -607,145 +575,144 @@ class _RewardsPageState extends State<RewardsPage>
           color: Colors.transparent,
           child: InkWell(
             borderRadius: BorderRadius.circular(20),
-            onTap: isLocked
-                ? () => _showInsufficientPointsDialog(reward)
-                : isRedeemed
+            onTap: isRedeemed
                 ? null
-                : () => _showRedeemDialog(reward),
+                : (isLocked
+                      ? () => _showInsufficientPointsDialog(reward)
+                      : () => _showRedeemDialog(reward)),
             child: Opacity(
               opacity: isLocked ? 0.5 : 1.0,
-              child: Stack(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Lock icon or emoji
-                        if (isLocked)
-                          Align(
-                            alignment: Alignment.topRight,
-                            child: Icon(
-                              Icons.lock,
-                              color: Colors.grey,
-                              size: 20,
-                            ),
-                          )
-                        else if (isRedeemed)
-                          Align(
-                            alignment: Alignment.topRight,
-                            child: Icon(
-                              Icons.check_circle,
-                              color: _green,
-                              size: 20,
-                            ),
-                          ),
-
-                        SizedBox(height: 8),
-
-                        // Emoji
-                        Center(
-                          child: Text(
-                            reward['image'],
-                            style: TextStyle(fontSize: 48),
-                          ),
-                        ),
-
-                        SizedBox(height: 12),
-
-                        // Category tag
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: _primaryRed.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            reward['category'],
-                            style: TextStyle(
-                              color: _primaryRed,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: 8),
-
-                        // Name
-                        Text(
-                          reward['name'],
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-
-                        SizedBox(height: 4),
-
-                        // Description
-                        Text(
-                          reward['description'],
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey[600],
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-
-                        Spacer(),
-
-                        // Points
-                        Row(
-                          children: [
-                            Icon(Icons.stars, size: 16, color: _gold),
-                            SizedBox(width: 4),
-                            Text(
-                              '${reward['points']}',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: _primaryRed,
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.all(14),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Lock icon or check icon
+                          if (isLocked)
+                            Align(
+                              alignment: Alignment.topRight,
+                              child: Icon(
+                                Icons.lock,
+                                color: Colors.grey,
+                                size: 20,
+                              ),
+                            )
+                          else if (isRedeemed)
+                            Align(
+                              alignment: Alignment.topRight,
+                              child: Icon(
+                                Icons.check_circle,
+                                color: _green,
+                                size: 20,
                               ),
                             ),
-                          ],
-                        ),
-                      ],
+
+                          SizedBox(height: 6),
+
+                          // Emoji
+                          Center(
+                            child: Text(
+                              reward['image'],
+                              style: TextStyle(fontSize: 50),
+                            ),
+                          ),
+
+                          SizedBox(height: 10),
+
+                          // Category tag
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: _primaryRed.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              reward['category'],
+                              style: TextStyle(
+                                color: _primaryRed,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+
+                          SizedBox(height: 8),
+
+                          // Name
+                          Text(
+                            reward['name'],
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+
+                          SizedBox(height: 4),
+
+                          // Description
+                          Text(
+                            reward['description'],
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey[600],
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+
+                          Spacer(),
+
+                          // Points
+                          Row(
+                            children: [
+                              Icon(Icons.stars, size: 16, color: _gold),
+                              SizedBox(width: 4),
+                              Text(
+                                '${reward['points']}',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: _primaryRed,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
 
                   // Redeem button
                   if (canRedeem)
-                    Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [_primaryRed, _lightRed],
-                          ),
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(18),
-                            bottomRight: Radius.circular(18),
-                          ),
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [_primaryRed, _lightRed],
                         ),
-                        child: Center(
-                          child: Text(
-                            'REDEEM',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                            ),
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(18),
+                          bottomRight: Radius.circular(18),
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'REDEEM',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            letterSpacing: 0.5,
                           ),
                         ),
                       ),
@@ -908,7 +875,6 @@ class _RewardsPageState extends State<RewardsPage>
 
     await _saveUserData();
     await _saveRedeemedRewards();
-    await _saveTransaction(reward);
 
     await InboxPage.createNotification(
       type: 'reward',
