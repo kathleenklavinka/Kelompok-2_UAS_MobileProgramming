@@ -3,11 +3,15 @@ import 'package:provider/provider.dart';
 import 'constants/colors.dart';
 import 'pages/home_page.dart';
 import 'providers/point_provider.dart';
+import 'providers/tier_provider.dart';
 
 void main() {
   runApp(
     MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => PointProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => PointProvider()),
+        ChangeNotifierProvider(create: (_) => TierProvider()),
+      ],
       child: const LoyaltyApp(),
     ),
   );
