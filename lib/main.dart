@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'constants/colors.dart';
 import 'pages/home_page.dart';
+import 'providers/point_provider.dart';
 
 void main() {
-  runApp(const LoyaltyApp());
+  runApp(
+    MultiProvider(
+      providers: [ChangeNotifierProvider(create: (_) => PointProvider())],
+      child: const LoyaltyApp(),
+    ),
+  );
 }
 
 class LoyaltyApp extends StatelessWidget {
